@@ -3,7 +3,7 @@ while (!newSim){
   int cols = width;
   int rows = height;
   
-  Elements[][] fluidField = new Elements[cols][rows];
+  Element[][] fluidField = new Element[cols][rows];
   
   for (int i = 0; i < cols; i++) {
     for (int j = 0; j < rows; j++) {
