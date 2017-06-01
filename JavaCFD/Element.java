@@ -4,12 +4,12 @@ public class Element{
     boolean solid;
     boolean inlet;
     boolean outlet;
-    double density, xv, yv, spd;
+    double density, xVelocity, yVelocity, speed;
     public Element(){
-      up = down = left = right = northEast = southEast = northWest = southWest = here =  density = xv = yv = spd = 0.0;
+      up = down = left = right = northEast = southEast = northWest = southWest = here =  density = xVelocity = yVelocity = speed = 0.0;
       solid = inlet = outlet = false;
     }
-    public Element(String config, double up, double down, double left, double right, double northEast, double southEast, double northWest, double southWest, double here, double density, double xv, double yv, double spd){
+    public Element(String config, double up, double down, double left, double right, double northEast, double southEast, double northWest, double southWest, double here, double density, double xVelocity, double yVelocity, double speed){
       if(config.equals("solid")){ // used string parameter to prevent confusingly long constructor
         solid = true;
         inlet = false;
