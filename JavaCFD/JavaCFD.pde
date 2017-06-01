@@ -16,8 +16,11 @@
 //  }
 //}
 
-size(1000, 1000);
-int rows = height;
-int cols = width;
-
-Simulation sim = new Simulation(rows, cols);
+void setup(){
+  Simulation sim;
+  size(1000, 1000);
+  int rows = height;
+  int cols = width;
+  
+  sim = new Simulation(rows, cols);
+}
