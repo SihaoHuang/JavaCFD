@@ -17,7 +17,7 @@
 //}
 
 size(1000, 1000);
-int cols = width;
 int rows = height;
+int cols = width;
 
-Simulation = new Simulation();
+Simulation sim = new Simulation(rows, cols);
