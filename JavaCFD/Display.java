@@ -1,12 +1,12 @@
-class Display(){
+public class Display{
   
-  boolean DensityDisplay
+  boolean densityDisplay;
   
-  Display(){
-    colorMode(HSB, 100);
+  public Display(){
+    colorMode("HSB", 100);
   }
   
-  void disp(){
+  public void disp(){
     if
     for (int i = 0; i < cols; i++) {
       for (int j = 0; j < rows; j++) {
