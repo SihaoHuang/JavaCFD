@@ -7,23 +7,25 @@ class Simulation{
   Element[][] fluidField;
   
   Simulation(int rows, int cols){
-    colorMode(HSB, 100);
-    rows = this.rows;
-    cols = this.cols;
+    this.rows = rows;
+    this.cols = cols;
     fluidField = new Element[rows][cols];
-    //for (int i = 0; i < cols; i++) {
-    //  for (int j = 0; j < rows; j++) {
-    //    fluidField[i][j].set
-    //  }
-    //}
-  }
-  
-  void disp(){
     for (int i = 0; i < cols; i++) {
       for (int j = 0; j < rows; j++) {
-        stroke(scaleValue(fluidField[i][j].getVelocity(), 0.0, 100.0, 0.0, 100.0), 100 ,100); // scale
-        fill(scaleValue(fluidField[i][j].getVelocity()), 100, 100);
-        point(i,j);
+        fluidField[i][j] = new Element();
+        fluidField[i][j].setHere(random(100));
+      }
+    }
+  }
+ 
+  void display(){
+    background(0);
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < cols; j++) {
+        colorMode(HSB, 100);
+        stroke((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 100.0, 0.0, 100.0), 100.0 ,100.0); // fix scaling values
+        fill((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 100.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+        point(i, j);
       }
     }
   }

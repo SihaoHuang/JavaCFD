@@ -16,11 +16,18 @@
 //  }
 //}
 
+Simulation sim;
+int rows;
+int cols;
+
 void setup(){
-  Simulation sim;
-  size(1000, 1000);
-  int rows = height;
-  int cols = width;
+  
+  size(500, 500);
+  rows = height;
+  cols = width;
   
   sim = new Simulation(rows, cols);
+}
+void draw(){
+  sim.display();
 }

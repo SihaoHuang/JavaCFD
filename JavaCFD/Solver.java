@@ -1,4 +1,4 @@
-public class Solver(){
+public class Solver{
     int rows, cols;
     Element[][] fluidField;
     int time;
