@@ -2,21 +2,25 @@ public class Solver{
     int rows, cols;
     Element[][] fluidField;
     int time;
-    public Solver(Element[][] fluidField, int vel){
-	//initializes the simulation
-	//create elements for each block in the display
-	time = 0;
-	fluidField = this.fluidField;
-	rows = fluidField.length;
-	cols= fluidField[0].length;
-	//initiate fluid with specific density and specified speed in x dir
-	for (int r = 0; r < rows; r++){
-	    for (int c = 0; c< cols; c++){
-		//for non solids, set the initial values for each instance variable for each element based on the algorithm
-	    }
-	}
-	//set initial time
-	time = 0;	
+    double overallVelocity;
+    
+    public Solver(Element[][] fluidField, double overallVelocity){
+  		//initializes the simulation
+  		//create elements for each block in the display
+      this.overallVelocity = overallVelocity;
+  		time = 0;
+  		fluidField = this.fluidField;
+  		rows = fluidField.length;
+  		cols= fluidField[0].length;
+  		//initiate fluid with specific density and specified speed in x dir
+  		for (int r = 0; r < rows; r++){
+  			for (int c = 0; c< cols; c++){
+  			//for non solids, set the initial values for each instance variable for each element based on the algorithm
+          
+  			}
+  		}
+  		//set initial time
+  		time = 0;	
     }
     public void run(){
 	//actual algorithm  here

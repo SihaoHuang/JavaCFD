@@ -77,42 +77,83 @@ public class Element{
       inlet = false;
       outlet = false;
     }
-    //set functions for all of the double instance variable in order to apply the new values from the algorithm
+    
+    /******************* SETS ******************/
+    
     public void setUp(double up){
-	this.up=up;
+	    this.up=up;
     }
     public void setDown(double down){
-	this.down= down;
+	    this.down= down;
     }
     public void setLeft(double left){
-	this.left = left;
+	    this.left = left;
     }
     public void setRight(double right){
-	this.right =right;
+	    this.right =right;
     }
     public void setNorthEast(double northEast){
-	this.northEast =northEast;
+	    this.northEast =northEast;
     }
     public void setNorthWest(double northWest){
-	this.northWest = northWest;
+	    this.northWest = northWest;
     }
     public void setSouthEast(double southEast){
-	this.southEast = southEast;
+	    this.southEast = southEast;
     }
     public void setSouthWest(double southWest){
-	this.southWest = southWest; 
+	    this.southWest = southWest; 
     }
     public void setDensity(double density){
-	this.density = density;
+	    this.density = density;
     }
     public void setxVelocity(double xVelocity){
-	this.xVelocity = xVelocity;
+	    this.xVelocity = xVelocity;
     }
     public void setyVelocity(double yVelocity){
-	this.yVelocity = yVelocity;
+	    this.yVelocity = yVelocity;
     }
     public void setSpeed(double speed){
-	this.speed = speed;
+	    this.speed = speed;
+    }
+    
+    /******************* GETS ******************/
+    
+    public double setUp(){
+      this.up=up;
+    }
+    public double setDown(){
+      this.down= down;
+    }
+    public double setLeft(){
+      this.left = left;
+    }
+    public double setRight(){
+      this.right =right;
+    }
+    public double setNorthEast(){
+      this.northEast =northEast;
+    }
+    public double setNorthWest(double northWest){
+      this.northWest = northWest;
+    }
+    public double setSouthEast(double southEast){
+      this.southEast = southEast;
+    }
+    public double setSouthWest(double southWest){
+      this.southWest = southWest; 
+    }
+    public double setDensity(double density){
+      this.density = density;
+    }
+    public double setxVelocity(double xVelocity){
+      this.xVelocity = xVelocity;
+    }
+    public double setyVelocity(double yVelocity){
+      this.yVelocity = yVelocity;
+    }
+    public double setSpeed(double speed){
+      this.speed = speed;
     }
     
 }

@@ -22,11 +22,11 @@ int cols;
 
 void setup(){
   
-  size(500, 500);
+  size(1000,1000);
   rows = height;
   cols = width;
   
-  sim = new Simulation(rows, cols);
+  sim = new Simulation(rows, cols, 100, 100.0);
 }
 void draw(){
   sim.display();

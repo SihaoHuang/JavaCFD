@@ -5,8 +5,9 @@ class Simulation{
   int rows;
   int cols;
   Element[][] fluidField;
+  Double overallVelocity;
   
-  Simulation(int rows, int cols){
+  Simulation(int rows, int cols, int totalIterations, double overallVelocity){
     this.rows = rows;
     this.cols = cols;
     fluidField = new Element[rows][cols];
