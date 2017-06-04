@@ -50,10 +50,6 @@ public class Element{
       return here;
     }
     
-    public void setHere(double val){
-      here = val;
-    }
-    
     public void setSolid(){
       solid = true;
       inlet = false;
@@ -80,6 +76,9 @@ public class Element{
     
     /******************* SETS ******************/
     
+    public void setHere(double val){
+      here = val;
+    }
     public void setUp(double up){
 	    this.up=up;
     }
@@ -120,40 +119,43 @@ public class Element{
     /******************* GETS ******************/
     
     public double setUp(){
-      this.up=up;
+      return up;
     }
     public double setDown(){
-      this.down= down;
+      return down;
     }
     public double setLeft(){
-      this.left = left;
+      return left;
     }
     public double setRight(){
-      this.right =right;
+      return right;
     }
     public double setNorthEast(){
-      this.northEast =northEast;
+      return northEast;
     }
-    public double setNorthWest(double northWest){
-      this.northWest = northWest;
+    public double setNorthWest(){
+      return northWest;
     }
-    public double setSouthEast(double southEast){
-      this.southEast = southEast;
+    public double setSouthEast(){
+      return southEast;
     }
-    public double setSouthWest(double southWest){
-      this.southWest = southWest; 
+    public double setSouthWest(){
+      return southWest; 
     }
-    public double setDensity(double density){
-      this.density = density;
+    public double setDensity(){
+      return density;
     }
-    public double setxVelocity(double xVelocity){
-      this.xVelocity = xVelocity;
+    public double setxVelocity(){
+      return xVelocity;
     }
-    public double setyVelocity(double yVelocity){
-      this.yVelocity = yVelocity;
+    public double setyVelocity(){
+      return yVelocity;
     }
-    public double setSpeed(double speed){
-      this.speed = speed;
+    public double setSpeed(){
+      return speed;
+    }
+    public boolean isSolid(){
+      return solid;
     }
     
 }

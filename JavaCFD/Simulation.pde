@@ -14,8 +14,17 @@ class Simulation{
     for (int i = 0; i < cols; i++) {
       for (int j = 0; j < rows; j++) {
         fluidField[i][j] = new Element();
-        fluidField[i][j].setHere(random(100));
+        fluidField[i][j].setHere(random(20));
       }
+    }
+  }
+  
+  void run(){
+    long iterationCount = 0;
+    while(running){ //IMPORTANT implement button latter
+      iterate();
+      iterationCount += 1;
+      if(iterationCount % 50 == 0) display();
     }
   }
  
