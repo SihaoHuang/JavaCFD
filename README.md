@@ -4,5 +4,5 @@ Computational fluid dynamics software written in Java using the Lattice-Boltzman
 Written for Mr. Konstantinovich's AP Computer Science Class, Stuyvesant High School.
 
 References:
-Lindsay Crowl's GSAC Talk, http://www.math.utah.edu/~crowl/pres.pdf
+Lindsay Crowl's GSAC Talk, http://www.math.utah.edu/~crowl/pres.pdf <br>
 Weber State University's project on Lattice-Boltzmann, http://physics.weber.edu/schroeder/javacourse/LatticeBoltzmann.pdf
