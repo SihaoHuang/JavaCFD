@@ -3,11 +3,13 @@ public class Solver{
     int rows, cols;
     Element[][] fluidField; //passed down from Simulation with boundary conditions properly configured
     int time;
+    double viscosity; //fluid viscosity, user input
     double overallVelocity; //wind tunnel velocity, user input
     
-    public Solver(Element[][] fluidField, double overallVelocity){
+    public Solver(Element[][] fluidField, double overallVelocity, double viscosity){
   		//initializes the simulation
   		//create elements for each block in the display
+      this.viscosity = viscosity;
       this.overallVelocity = overallVelocity;
   		time = 0;
   		fluidField = this.fluidField;
@@ -35,20 +37,23 @@ public class Solver{
     
     public void iterate(){ //executes one iteration of algorithm
     	collide();
-    	stream();
+    	move();
       collideBounary();
       time += 1;
     }
-    private void collide(){
-	//f(x,t+deltat)=f(x,t)+ (feq - finitial)/(tau)
-	//set the value for tau
-	//for each element do something
+    private void collide(){ //f(x,t+deltat)=f(x,t)+ (feq - finitial)/(tau)
+	    double relaxationTime = 1 / (3*viscosity + 0.5); //omega in the equation per iteration
     	for (int r = 0; r < rows; r++){
     	    for (int c = 0; c < cols; c++){
+            if(!fluidField[r][c].isSolid()){
+              sumVelocities = fluidField[r][c].sumVelocities();
+              fluidField[r][c].setDensity(sumVelocities);
+              if(sumVelocities > 0)
+            }
     	    }
     	}
     }
-    private void stream(){
+    private void move(){
 	//f(x+e*deltat, t+deltat)=f(x,t+deltat)	
     }
     

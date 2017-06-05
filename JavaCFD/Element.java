@@ -50,6 +50,9 @@ public class Element{
       return here;
     }
     
+    public double sumVelocities(){
+      return up + down + left + right + northEast + southEast + northWest + southWest + here;
+    }
     public void setSolid(){
       solid = true;
       inlet = false;
@@ -118,40 +121,40 @@ public class Element{
     
     /******************* GETS ******************/
     
-    public double setUp(){
+    public double getUp(){
       return up;
     }
-    public double setDown(){
+    public double getDown(){
       return down;
     }
-    public double setLeft(){
+    public double getLeft(){
       return left;
     }
-    public double setRight(){
+    public double getRight(){
       return right;
     }
-    public double setNorthEast(){
+    public double getNorthEast(){
       return northEast;
     }
-    public double setNorthWest(){
+    public double getNorthWest(){
       return northWest;
     }
-    public double setSouthEast(){
+    public double getSouthEast(){
       return southEast;
     }
-    public double setSouthWest(){
+    public double getSouthWest(){
       return southWest; 
     }
-    public double setDensity(){
+    public double getDensity(){
       return density;
     }
-    public double setxVelocity(){
+    public double getxVelocity(){
       return xVelocity;
     }
-    public double setyVelocity(){
+    public double getyVelocity(){
       return yVelocity;
     }
-    public double setSpeed(){
+    public double getSpeed(){
       return speed;
     }
     public boolean isSolid(){
