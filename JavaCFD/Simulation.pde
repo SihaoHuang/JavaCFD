@@ -35,7 +35,10 @@ class Simulation{
     fill(0);
     text("Start",50+150/4,525+50*3/4);//start button
     text("Stop",52.5+150/4,625+50*3/4);//stop button
+    mousePressed();
     //flow velociy slider
+    //rect();
+    text("Total Iterations", 250, 525+50*3/4);
     //total iterations box
     //density/velocity display radio buttons
   }
@@ -43,6 +46,19 @@ class Simulation{
   double scaleValue(double val, float inMin, float inMax, float outMin, float outMax) {
     return ((outMax - outMin) * (val - inMin) / (inMax - inMin)) + outMin;
   }
-  
+  void mousePressed(){
+    if (start()){
+      //start the simulation      
+    }
+    if (stop()){
+      //stop the simulation       
+    }
+  }
+  boolean start(){
+       return (mouseX >= 50 && mouseX <= 50+150 && mouseY <= 525+50  && mouseY >= 525);
+  }
+  boolean stop(){
+       return (mouseX >= 50 && mouseX <= 50+150 && mouseY <= 625+50  && mouseY >= 625);
+  }
   
 }
