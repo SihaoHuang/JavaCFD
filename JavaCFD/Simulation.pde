@@ -39,6 +39,8 @@ class Simulation{
     //flow velociy slider
     //rect();
     text("Total Iterations", 250, 525+50*3/4);
+    fill(100);
+    rect(250,625, 200,50);
     //total iterations box
     //density/velocity display radio buttons
   }
