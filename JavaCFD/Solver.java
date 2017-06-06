@@ -48,7 +48,27 @@ public class Solver{
             if(!fluidField[r][c].isSolid()){
               sumVelocities = fluidField[r][c].sumVelocities();
               fluidField[r][c].setDensity(sumVelocities);
-              if(sumVelocities > 0)
+              int xVelocity, yVelocity;
+              if(sumVelocities > 0){
+                xVelocity = (fluidField[r][c].getRight() - fluidField[r][c].getNorthEast() - fluidField[r][c].getSouthEast() 
+                            - fluidField[r][c].getLeft() - fluidField[r][c].getNorthWest() - fluidField[r][c].getSouthWest()) / sumVelocities);
+                yVelocity = (fluidField[r][c].getUp() - fluidField[r][c].getNorthEast() - fluidField[r][c].getNorthWest()
+                            - fluidField[r][c].getDown() - fluidField[r][c].getSouthEast() - fluidField[r][c].getSouthWest() / sumVelocities);
+              }
+              else{
+                xVelocity = 0;
+                yVelocity = 0;
+              }
+              fluidField[r][c].setHere(relaxationTime)
+              fluidField[r][c].setUp()
+              fluidField[r][c].setDown()
+              fluidField[r][c].setLeft()
+              fluidField[r][c].setRight()
+              fluidField[r][c].setNorthEast();
+              fluidField[r][c].setNorthWest();
+              fluidField[r][c].setSouthEast();
+              fluidField[r][c].setSouthWest();
+
             }
     	    }
     	}
@@ -72,11 +92,11 @@ public class Solver{
               fluidField[r][c].setDown(0.0);
             }
             if (fluidField[r][c].getLeft() > 0){
-              fluidField[r + 1][c].setRight(fluidField[r + 1][c].getRight + fluidField[r][c].getLeft());
+              fluidField[r + 1][c].setRight(fluidField[r + 1][c].getRight() + fluidField[r][c].getLeft());
               fluidField[r][c].setLeft(0.0);
             }
             if (fluidField[r][c].getRight() > 0){
-              fluidField[r - 1][c].setLeft(fluidField[r - 1][c].getLeft + fluidField[r][c].getRight());
+              fluidField[r - 1][c].setLeft(fluidField[r - 1][c].getLeft() + fluidField[r][c].getRight());
               fluidField[r][c].setRight(0.0);
             }
             if (fluidField[r][c].getNorthEast() > 0){
