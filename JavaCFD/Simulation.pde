@@ -43,14 +43,30 @@ class Simulation{
     text("Velocity",600-10,650+25/2);
     //rect();
     text("Total Iterations", 250, 525+50*3/4);
+    fill(0);
+    text("Number", 250, 625);
+    fill(100);
     rect(250,625,250,50);  //total iterations box
-    mousePressed();
     text("Velocity : "+ 1,750,550+25/2);
     text("Viscosity : " + 1, 1000, 550+25/2);
     rect(750, 650-25/2, 200, 20);
     rect(1000,650-25/2,200,20);  
+    fill(0);
+    rect(850-5, 650-25/2, 10, 20);
+    rect(1100-5,650-25/2, 10, 20);
+    if (velslider()){
+      fill(100);
+      rect(750, 650-25/2, 200, 20);
+      fill(0);
+    }
+    if (viscslider()){
+      fill(100);
+    rect(1000,650-25/2,200,20); 
+    fill(0);
+    }
     //flow velocity, viscosity slider 
-}
+       mousePressed();
+  }
   
   double scaleValue(double val, float inMin, float inMax, float outMin, float outMax) {
     return ((outMax - outMin) * (val - inMin) / (inMax - inMin)) + outMin;
@@ -72,6 +88,16 @@ class Simulation{
       ellipse(550,650,30,30);//center(550,650)
       fill(100);
     }
+    if (velslider()){
+      fill(0);
+      rect(mouseX, 650-25/2, 10, 20);
+      fill(100);
+    }
+    if (viscslider()){
+      fill(0);
+      rect(mouseX, 650-25/2, 10, 20);
+      fill(100);
+    }
   }
   
   boolean start(){
@@ -91,6 +117,16 @@ class Simulation{
   boolean barrier(){
     return true;
   }
+    /*rect(750, 650-25/2, 200, 20);
+    rect(1000,650-25/2,200,20);  */
+
+  boolean velslider(){
+    return (mouseX >= 750 && mouseX <=950-10 && mouseY >=650-25/2 && mouseY<=650+25/2);
+  }
+  boolean viscslider(){
+    return (mouseX>= 1000 && mouseX<=1200-10 && mouseY >= 650-25/2&& mouseY<=650+25/2);
+  }
+ 
   
   
 }
