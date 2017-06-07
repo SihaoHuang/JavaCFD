@@ -48,6 +48,8 @@ public class Solver{
             if(!fluidField[r][c].isSolid()){
               sumVelocities = fluidField[r][c].sumVelocities();
               fluidField[r][c].setDensity(sumVelocities);
+              
+              //calculate the two basis vectors
               int xVelocity, yVelocity;
               if(sumVelocities > 0){
                 xVelocity = (fluidField[r][c].getRight() - fluidField[r][c].getNorthEast() - fluidField[r][c].getSouthEast() 
@@ -65,7 +67,8 @@ public class Solver{
               double yVelocitySquared = yVelocity*yVelocity;
               double 2xyVelocities = xVelocity*yVelocity*2;
               double velocitySquaredSum = xVelocitySquared + yVelocitySquared;
-
+              
+              //collision code: add new value according to Lattice-Boltzmann algorithm
               fluidField[r][c].setHere(fluidField[r][c].getHere() + relaxationTime * ((4.0/9.0) * sumVelocities * 
                                       (1 - velocitySquaredSum*1.5) - fluidField[r][c].getHere()));
 
@@ -97,10 +100,7 @@ public class Solver{
     	    }
     	}
     }
-    private void move(){
-	//f(x+e*deltat, t+deltat)=f(x,t+deltat)	
-    }
-    
+
     private void collideBoundary(){ //performs collisions for boundary conditions
       for(int r = 0; r < rows; r++){
         for(int c = 0; c < cols; c++){
@@ -142,6 +142,22 @@ public class Solver{
           }
         }
       }
+    }
+    
+    private void move(){ //f(x+e*deltat, t+deltat)=f(x,t+deltat)  
+      //move elements using four corner vectors, handling all 8 directions
+      for(int r = 0; r < rows - 1; r ++){}
+      for(int r = 0; r < rows - 1; r ++){}
+      for(int r = rows - 1; r > 0; r --){}
+      for(int r = rows - 1; r > 0; r --){}
+      //move the elements that were missed out 
+
+      //stream inlet conditions
+
+      //stream outlet conditions
+
+      //stream top and bottom
+
     }
     
 }
