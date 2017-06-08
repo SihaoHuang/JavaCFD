@@ -145,19 +145,96 @@ public class Solver{
     }
     
     private void move(){ //f(x+e*deltat, t+deltat)=f(x,t+deltat)  
+
+      //start with the two edges
+      for(int c = 0; c < cols - 1; c ++){
+        fluidField[0][c].setDown(fluidField[0][c + 1].getDown());
+      }
+      for(int c = cols - 1; c > 0; c --){
+        fluidField[rows - 1][c].setUp(fluidField[rows -1][c - 1].getUp());
+      }
+
       //move elements using four corner vectors, handling all 8 directions
-      for(int r = 0; r < rows - 1; r ++){}
-      for(int r = 0; r < rows - 1; r ++){}
-      for(int r = rows - 1; r > 0; r --){}
-      for(int r = rows - 1; r > 0; r --){}
-      //move the elements that were missed out 
+      for(int r = 0; r < rows - 1; r ++){
+        for(int c = cols - 1; c > 0; c --){
+          fluidField[r][c].setUp(fluidField[r][c - 1].getUp()); //move up
+          fluidField[r][c].setNorthWest(fluidField[r + 1][y - 1].getNorthWest()); //move northwest
+        }
+      }
+      for(int r = 0; r < rows - 1; r ++){
+        for(int c = 0; c < cols - 1; c ++){
+          fluidField[r][c].setLeft(fluidField[r + 1][c].getLeft()); //move left
+          fluidField[r][c].setSouthWest(fluidField[r + 1][c + 1].getSouthWest()); //move southwest
+        }
+      }
+      for(int r = rows - 1; r > 0; r --){
+        for(int c = cols - 1; c > 0; c --){
+          fluidField[r][c].setRight(fluidField[r - 1][c].getRight()); //move right
+          fluidField[r][c].setNorthEast(fluidField[r - 1][c - 1].getNorthEast()); //move northeast
+        }
+      }
+      for(int r = rows - 1; r > 0; r --){
+        for(int c = 0; c < cols - 1; c ++){
+          fluidField[r][c].setDown(fluidField[r][c + 1].getDown()); //move down
+          fluidField[r][c].setSouthEast(fluidField[r - 1][c + 1].getSouthEast()); //move southeast
+        }
+      }
 
+      //set of constants, most of these are for later. MOVE AS INSTANCE VARIABLES IF NEEDED
+      double threeTimesOverallVelocity = 3*overallVelocity;
+      double threeTimesOverallVelocitySquared = threeTimesOverallVelocity*overallVelocity;
+      double here = 4.0/9.0 * (1 - 1.5*overallVelocity*overallVelocity);
+      double up = 1.0/9.0 * (1 - 1.5*overallVelocity*overallVelocity);
+      double down = 1.0/9.0 * (1 - 1.5*overallVelocity*overallVelocity);
+      double left = 1.0/9.0 * (1 - threeTimesOverallVelocity + threeTimesOverallVelocitySquared);
+      double right = 1.0/9.0 * (1 + threeTimesOverallVelocity + threeTimesOverallVelocitySquared);
+      double northEast = 1.0/36.0 * (1 + threeTimesOverallVelocity + threeTimesOverallVelocitySquared);
+      double northWest = 1.0/36.0 * (1 - threeTimesOverallVelocity + threeTimesOverallVelocitySquared);
+      double southEast = 1.0/36.0 * (1 + threeTimesOverallVelocity + threeTimesOverallVelocitySquared);
+      double southWest = 1.0/36.0 * (1 - threeTimesOverallVelocity + threeTimesOverallVelocitySquared);
+      
       //stream inlet conditions
+      for(int c = 0; c < cols; c ++){
+        if(!fluidField[0][c].isSolid()){
+          fluidField[0][c].setRight(right);
+          fluidField[0][c].setNorthEast(northEast);
+          fluidField[0][c].setSouthEast(southEast);
+        }
+      }
 
-      //stream outlet conditions
+      //stream outlet conditions. MIGHT NOT BE REQUIRED
+      for(int c = 0; c < cols; c ++){
+        fluidField[rows - 1][c].setLeft(left);
+        fluidField[rows - 1][c].setNorthWest(northWest);
+        fluidField[rows - 1][c].setSouthWest(southWest);
+      }
 
       //stream top and bottom
+      for (int r = 0; r < row; r ++) {
+        
+        //reinit top boundary
+        fluidField[r][0].setHere(here);
+  			fluidField[r][0].setUp(up);
+        fluidField[r][0].setDown(down);
+        fluidField[r][0].setLeft(left);
+        fluidField[r][0].setRight(right);
+        fluidField[r][0].setNorthEast(northEast); 
+        fluidField[r][0].setNorthWest(northWest); 
+        fluidField[r][0].setSouthEast(southEast); 
+        fluidField[r][0].setSouthWest(southWest); 
+        //reinit bottom boundary
+        fluidField[r][col - 1].setHere(here);
+  			fluidField[r][col - 1].setUp(up);
+        fluidField[r][col - 1].setDown(down);
+        fluidField[r][col - 1].setLeft(left);
+        fluidField[r][col - 1].setRight(right);
+        fluidField[r][col - 1].setNorthEast(northEast); 
+        fluidField[r][col - 1].setNorthWest(northWest); 
+        fluidField[r][col - 1].setSouthEast(southEast); 
+        fluidField[r][col - 1].setSouthWest(southWest); 
 
+      }
+ 
     }
     
 }
