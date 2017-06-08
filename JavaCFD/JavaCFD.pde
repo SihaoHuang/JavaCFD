@@ -21,7 +21,7 @@ int rows;
 int cols;
 
 void setup(){
-  
+
   size(900, 700);
   rows = width;
   cols = height;
@@ -29,6 +29,7 @@ void setup(){
   sim = new Simulation(rows,cols-200);
   //decreasing cols by 200 results in 200*rows box for buttons on bottom
   //space for buttons and sliders is 900 wide and 200 high(700-900)
+
 }
 void draw(){
   sim.display();

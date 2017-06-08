@@ -5,19 +5,21 @@ class Simulation{
   int rows;
   int cols;
   Element[][] fluidField;
+
   boolean start;
   int slider1X;
   int slider2X;
   
+
   
-  Simulation(int rows, int cols){
+  Simulation(int rows, int cols, int totalIterations, double overallVelocity){
     this.rows = rows;
     this.cols = cols;
     fluidField = new Element[rows][cols];
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
         fluidField[i][j] = new Element();
-        fluidField[i][j].setHere(random(100));
+        fluidField[i][j].setHere(random(20));
       }
     }
     start = false;
