@@ -120,7 +120,9 @@ public class Element{
     }
     
     /******************* GETS ******************/
-    
+    public double getHere(){
+      return here;  
+    }
     public double getUp(){
       return up;
     }

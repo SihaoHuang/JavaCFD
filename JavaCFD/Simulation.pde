@@ -1,16 +1,14 @@
 class Simulation{
   int x, y;
   int totalIterations; 
-  Double reynolds; // reynold's number
   int rows;
   int cols;
   Element[][] fluidField;
+  Solver solution;
 
   boolean start;
   int slider1X;
   int slider2X;
-  
-
   
   Simulation(int rows, int cols, int totalIterations, double overallVelocity){
     this.rows = rows;
@@ -19,7 +17,7 @@ class Simulation{
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
         fluidField[i][j] = new Element();
-        fluidField[i][j].setHere(random(20));
+        //fluidField[i][j].setHere(random(20));
       }
     }
     start = false;
@@ -28,38 +26,44 @@ class Simulation{
   }
 
   void display(){
-     for (int i = 0; i < rows; i+=10) {
-      for (int j = 0; j < cols; j+=10) {
-        colorMode(HSB, 100);
-        if (fluidField[i][j].solid){//fluidField[i][j].isSolid()){
-          stroke(0);
-          fill(0);
-          rect(i,j,10,10);
-          stroke((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 100.0, 0.0, 100.0), 100.0 ,100.0); // fix scaling values
-        fill((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 100.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
-        point(i, j);
-        }
-        else{
-        stroke((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 100.0, 0.0, 100.0), 100.0 ,100.0); // fix scaling values
-        fill((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 100.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
-      rect(i,j,10,10);  
-        point(i, j);
-        }
-         
-      }
-      
-      }
+    if(start){ //INSTRUCTIONS: MAKE IT SO THAT START ONLY IS TRUE THE MOMENT THE MOUSE IS PRESSED
+      solution = new Solver(fluidField, VISCOSITY, OVERALL VELOCITY); //INSTRUCTIONS: ADD THE TWO CAPITALIZED VARIABLES AND GET THEM FROM THE SLIDER
+    }
+    if(solution != null){
+      solver.iterate();
+    }
+    for (int i = 0; i < rows; i+=10) {
+     for (int j = 0; j < cols; j+=10) {
+       colorMode(HSB, 100);
+       if (fluidField[i][j].solid){
+         stroke(0);
+         fill(0);
+         rect(i,j,10,10);
+         stroke((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 100.0, 0.0, 100.0), 100.0 ,100.0); // fix scaling values
+         fill((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 100.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+         point(i, j);
+       }
+       else{
+         stroke((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 100.0, 0.0, 100.0), 100.0 ,100.0); // fix scaling values
+         fill((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 100.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+         rect(i,j,10,10);  
+         point(i, j);
+       }  
+     }  
+   }
+    
     //colors are hard
     stroke(0);
     fill(100);
     rect(50,525,150,50);//start
     rect(50,625,150,50);//stop
-        rect(250,625,250,50);  //total iterations box
+    rect(250,625,250,50);  //total iterations box
     textSize(50*2/3);
     fill(0);
     text("Start",50+150/4,525+50*3/4);//start button
     text("Stop",52.5+150/4,625+50*3/4);//stop button
-            text(""+totalIterations, 250, 625+50*3/4);
+    text(""+totalIterations, 250, 625+50*3/4);
+     
     //density, velocity radio buttons
     fill(100);
     ellipse(550,550, 50, 50);//density
@@ -135,8 +139,7 @@ class Simulation{
       rect(slider2X, 650-25/2, 10, 20);
       fill(100);
     }
-    barrier();
-    
+    barrier(); 
   }
   
   boolean start(){
