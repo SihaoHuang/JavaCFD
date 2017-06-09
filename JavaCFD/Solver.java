@@ -12,7 +12,7 @@ public class Solver{
       this.viscosity = viscosity;
       this.overallVelocity = overallVelocity;
   		time = 0;
-  		fluidField = this.fluidField;
+  		this.fluidField = fluidField;
   		rows = fluidField.length;
   		cols= fluidField[0].length;
   		//initiate fluid with discretized velocity vectors

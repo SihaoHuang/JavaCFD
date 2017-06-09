@@ -37,7 +37,7 @@ class Simulation {
 
   void display() {
     if (start){
-    solution = new Solver(fluidField, viscocity, velocity);
+      solution = new Solver(fluidField, viscocity*100.0, velocity*100.0);
     }
     if (solution!= null){
       solution.iterate();
@@ -45,7 +45,7 @@ class Simulation {
     for (int i = 0; i < rows; i+=10) {
       for (int j = 0; j < cols; j+=10) {
         colorMode(HSB, 100);
-        if (fluidField[i][j].solid) {//fluidField[i][j].isSolid()){
+        if (fluidField[i][j].solid){
           stroke(0);
           fill(0);
           rect(i, j, 10, 10);
