@@ -22,7 +22,7 @@ int cols;
 
 void setup(){
 
-  size(900, 700);
+  size(1300, 700);
   rows = width;
   cols = height;
   
@@ -33,4 +33,7 @@ void setup(){
 }
 void draw(){
   sim.display();
+  if (mousePressed){
+  sim.mousePressed();
+  }        
 }

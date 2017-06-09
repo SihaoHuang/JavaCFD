@@ -160,5 +160,8 @@ public class Element{
     public boolean isSolid(){
       return solid;
     }
+    public double getHere(){
+      return here;
+    }
     
 }

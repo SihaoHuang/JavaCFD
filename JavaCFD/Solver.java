@@ -38,7 +38,7 @@ public class Solver{
     public void iterate(){ //executes one iteration of algorithm
     	collide();
     	move();
-      collideBounary();
+      collideBoundary();
       time += 1;
     }
     private void collide(){ //f(x,t+deltat)=f(x,t)+ (feq - finitial)/(tau)
@@ -46,14 +46,14 @@ public class Solver{
     	for (int r = 0; r < rows; r++){
     	    for (int c = 0; c < cols; c++){
             if(!fluidField[r][c].isSolid()){
-              sumVelocities = fluidField[r][c].sumVelocities();
+              double sumVelocities = fluidField[r][c].sumVelocities();
               fluidField[r][c].setDensity(sumVelocities);
               
               //calculate the two basis vectors
-              int xVelocity, yVelocity;
+              double xVelocity, yVelocity;
               if(sumVelocities > 0){
                 xVelocity = (fluidField[r][c].getRight() - fluidField[r][c].getNorthEast() - fluidField[r][c].getSouthEast() 
-                            - fluidField[r][c].getLeft() - fluidField[r][c].getNorthWest() - fluidField[r][c].getSouthWest()) / sumVelocities);
+                            - fluidField[r][c].getLeft() - fluidField[r][c].getNorthWest() - fluidField[r][c].getSouthWest() / sumVelocities);
                 yVelocity = (fluidField[r][c].getUp() - fluidField[r][c].getNorthEast() - fluidField[r][c].getNorthWest()
                             - fluidField[r][c].getDown() - fluidField[r][c].getSouthEast() - fluidField[r][c].getSouthWest() / sumVelocities);
               }
@@ -65,7 +65,7 @@ public class Solver{
               //temporary variables for the quadratic expressoins
               double xVelocitySquared = xVelocity*xVelocity;
               double yVelocitySquared = yVelocity*yVelocity;
-              double 2xyVelocities = xVelocity*yVelocity*2;
+              double xy2Velocities = xVelocity*yVelocity*2;
               double velocitySquaredSum = xVelocitySquared + yVelocitySquared;
               
               //collision code: add new value according to Lattice-Boltzmann algorithm
@@ -73,10 +73,10 @@ public class Solver{
                                       (1 - velocitySquaredSum*1.5) - fluidField[r][c].getHere()));
 
               fluidField[r][c].setLeft(fluidField[r][c].getLeft() + relaxationTime * ((1.0/9.0) * sumVelocities * 
-                                      (1 - 3*xVelocity + 4.5*xVelocitySquared - velocitySquaredSum*1.5) - fluidField[r][c].getLeft()))
+                                      (1 - 3*xVelocity + 4.5*xVelocitySquared - velocitySquaredSum*1.5) - fluidField[r][c].getLeft()));
 
               fluidField[r][c].setRight(fluidField[r][c].getRight() + relaxationTime * ((1.0/9.0) * sumVelocities * 
-                                       (1 + 3*xVelocity + 4.5*xVelocitySquared - velocitySquaredSum*1.5) - fluidField[r][c].getRight()))
+                                       (1 + 3*xVelocity + 4.5*xVelocitySquared - velocitySquaredSum*1.5) - fluidField[r][c].getRight()));
 
               fluidField[r][c].setUp(fluidField[r][c].getUp() + relaxationTime * ((1.0/9.0) * sumVelocities * 
                                     (1 + 3*yVelocity + 4.5*yVelocitySquared - velocitySquaredSum*1.5) - fluidField[r][c].getUp()));
@@ -84,17 +84,17 @@ public class Solver{
               fluidField[r][c].setDown(fluidField[r][c].getDown() + relaxationTime * ((1.0/9.0) * sumVelocities * 
                                       (1 - 3*yVelocity + 4.5*yVelocitySquared - velocitySquaredSum*1.5) - fluidField[r][c].getDown()));
 
-              fluidField[r][c].setNorthEast(fluidField[r][c].getNorthEast() + relaxationTime * (1.0/36.0) * sumVelocities * 
-                                           (1 + 3*xVelocity + 3*yVelocity + 4.5*(velocitySquaredSum + 2xyVelocities) - velocitySquaredSum*1.5) - fluidField[r][c].getNorthEast()));
+              fluidField[r][c].setNorthEast(fluidField[r][c].getNorthEast() + relaxationTime * ((1.0/36.0) * sumVelocities * 
+                                           (1 + 3*xVelocity + 3*yVelocity + 4.5*(velocitySquaredSum + xy2Velocities) - velocitySquaredSum*1.5) - fluidField[r][c].getNorthEast()));
 
-              fluidField[r][c].setNorthWest(fluidField[r][c].getNorthWest() + relaxationTime * (1.0/36.0) * sumVelocities * 
-                                           (1 - 3*xVelocity + 3*yVelocity + 4.5*(velocitySquaredSum - 2xyVelocities) - velocitySquaredSum*1.5) - fluidField[r][c].getNorthWest()));
+              fluidField[r][c].setNorthWest(fluidField[r][c].getNorthWest() + relaxationTime * ((1.0/36.0) * sumVelocities * 
+                                           (1 - 3*xVelocity + 3*yVelocity + 4.5*(velocitySquaredSum - xy2Velocities) - velocitySquaredSum*1.5) - fluidField[r][c].getNorthWest()));
 
-              fluidField[r][c].setSouthEast(fluidField[r][c].getSouthEast() + relaxationTime * (1.0/36.0) * sumVelocities * 
-                                           (1 + 3*xVelocity - 3*yVelocity + 4.5*(velocitySquaredSum - 2xyVelocities) - velocitySquaredSum*1.5) - fluidField[r][c].getSouthEast()));
+              fluidField[r][c].setSouthEast(fluidField[r][c].getSouthEast() + relaxationTime * ((1.0/36.0) * sumVelocities * 
+                                           (1 + 3*xVelocity - 3*yVelocity + 4.5*(velocitySquaredSum - xy2Velocities) - velocitySquaredSum*1.5) - fluidField[r][c].getSouthEast()));
 
-              fluidField[r][c].setSouthWest(fluidField[r][c].getSouthWest() + relaxationTime * (1.0/36.0) * sumVelocities * 
-                                           (1 - 3*xVelocity - 3*yVelocity + 4.5*(velocitySquaredSum + 2xyVelocities) - velocitySquaredSum*1.5) - fluidField[r][c].getSouthWest()));
+              fluidField[r][c].setSouthWest(fluidField[r][c].getSouthWest() + relaxationTime * ((1.0/36.0) * sumVelocities * 
+                                           (1 - 3*xVelocity - 3*yVelocity + 4.5*(velocitySquaredSum + xy2Velocities) - velocitySquaredSum*1.5) - fluidField[r][c].getSouthWest()));
 
             }
     	    }
@@ -158,7 +158,7 @@ public class Solver{
       for(int r = 0; r < rows - 1; r ++){
         for(int c = cols - 1; c > 0; c --){
           fluidField[r][c].setUp(fluidField[r][c - 1].getUp()); //move up
-          fluidField[r][c].setNorthWest(fluidField[r + 1][y - 1].getNorthWest()); //move northwest
+          fluidField[r][c].setNorthWest(fluidField[r + 1][c - 1].getNorthWest()); //move northwest
         }
       }
       for(int r = 0; r < rows - 1; r ++){
@@ -210,7 +210,7 @@ public class Solver{
       }
 
       //stream top and bottom
-      for (int r = 0; r < row; r ++) {
+      for (int r = 0; r < rows; r ++) {
         
         //reinit top boundary
         fluidField[r][0].setHere(here);
@@ -223,15 +223,15 @@ public class Solver{
         fluidField[r][0].setSouthEast(southEast); 
         fluidField[r][0].setSouthWest(southWest); 
         //reinit bottom boundary
-        fluidField[r][col - 1].setHere(here);
-  			fluidField[r][col - 1].setUp(up);
-        fluidField[r][col - 1].setDown(down);
-        fluidField[r][col - 1].setLeft(left);
-        fluidField[r][col - 1].setRight(right);
-        fluidField[r][col - 1].setNorthEast(northEast); 
-        fluidField[r][col - 1].setNorthWest(northWest); 
-        fluidField[r][col - 1].setSouthEast(southEast); 
-        fluidField[r][col - 1].setSouthWest(southWest); 
+        fluidField[r][cols - 1].setHere(here);
+  			fluidField[r][cols- 1].setUp(up);
+        fluidField[r][cols - 1].setDown(down);
+        fluidField[r][cols - 1].setLeft(left);
+        fluidField[r][cols - 1].setRight(right);
+        fluidField[r][cols - 1].setNorthEast(northEast); 
+        fluidField[r][cols - 1].setNorthWest(northWest); 
+        fluidField[r][cols - 1].setSouthEast(southEast); 
+        fluidField[r][cols - 1].setSouthWest(southWest); 
 
       }
  
