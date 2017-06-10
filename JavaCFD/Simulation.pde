@@ -1,7 +1,7 @@
 class Simulation {
+  
   int x, y;
   int totalIterations; 
-  Double reynolds; // reynold's number
   int rows;
   int cols;
   Element[][] fluidField;
@@ -10,7 +10,7 @@ class Simulation {
   double velocity, viscocity;
   String velocityString, viscocityString;
   boolean densityButton;
-  boolean start;
+  boolean start, stop;
   int slider1X;
   int slider2X;
 
@@ -27,6 +27,7 @@ class Simulation {
       }
     }
     start = false;
+    stop = true;
     slider1X= 750-25;
     slider2X= 1000;
     velocity = 0.001;
@@ -36,31 +37,57 @@ class Simulation {
   }
 
   void display() {
-    if (start){
-      solution = new Solver(fluidField, viscocity*100.0, velocity*100.0);
+    if (start()){
+      //solution = new Solver(fluidField, viscocity*100.0, velocity*100.0);
+      solution = new Solver(fluidField, 0.5, 0.5);
     }
-    if (solution!= null){
+    if (solution!= null && start){
       solution.iterate();
     }
-    for (int i = 0; i < rows; i+=10) {
-      for (int j = 0; j < cols; j+=10) {
-        colorMode(HSB, 100);
-        if (fluidField[i][j].solid){
-          stroke(0);
-          fill(0);
-          rect(i, j, 10, 10);
-          stroke((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 100.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-          fill((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 100.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
-          point(i, j);
-        } else {
-          stroke((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 100.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-          fill((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 100.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
-          rect(i, j, 10, 10);  
-          point(i, j);
+    // renders fluid field by velocity
+    if(!densityButton){
+      for (int i = 0; i < rows; i+=10) {
+        for (int j = 0; j < cols; j+=10) {
+          colorMode(HSB, 100);
+          if (fluidField[i][j].solid){
+            stroke(0);
+            fill(0);
+            rect(i, j, 10, 10);
+            stroke((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 100.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 100.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            point(i, j);
+          } else {
+            stroke((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 100.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 100.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            rect(i, j, 10, 10);  
+            point(i, j);
+          }
         }
       }
     }
-    //colors are hard
+    // renders fluid field by density
+    else{
+      for (int i = 0; i < rows; i+=10) {
+        for (int j = 0; j < cols; j+=10) {
+          colorMode(HSB, 100);
+          if (fluidField[i][j].solid){
+            stroke(0);
+            fill(0);
+            rect(i, j, 10, 10);
+            stroke((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            point(i, j);
+          } else {
+            stroke((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            rect(i, j, 10, 10);  
+            point(i, j);
+          }
+        }
+      }
+    }
+    
+    //draws GUI elements
     stroke(0);
     fill(100);
     rect(50, 525, 150, 50);//start
@@ -76,12 +103,12 @@ class Simulation {
     ellipse(550, 550, 50, 50);//density
     ellipse(550, 650, 50, 50);//velocity
     if (densityButton){
-            fill(0);
+      fill(0);
       ellipse(550, 550, 30, 30);//center(550,550)
       fill(100);
     }
     else{
-            fill(0);
+      fill(0);
       ellipse(550, 650, 30, 30);//center(550,650)
       fill(100);
       
@@ -124,22 +151,25 @@ class Simulation {
     }
   }
 
-  double scaleValue(double val, float inMin, float inMax, float outMin, float outMax) {
+  double scaleValue(double val, float inMin, float inMax, float outMin, float outMax) { //for colored display purposes
     return ((outMax - outMin) * (val - inMin) / (inMax - inMin)) + outMin;
   }
+  
   void mousePressed() {
     barrier();
+    //if (start()) {
+    //  if (!start) {
+    //    start = true;
+    //  }
+    //  //start the simulation
+    //}
     if (start()) {
-      if (!start) {
-        start = true;
-      }
-      //start the simulation
+      start = true;
+      stop = false;
     }
     if (stop()) {
-      if (start) {
-        start = false;
-      }
-      //stop the simulation
+      start = false;
+      stop = true;
     }
     if (density()) {     
        if (!densityButton){
@@ -163,44 +193,51 @@ class Simulation {
     }
     barrier();
   }
+  
   void updateVelocity() {
     String a = ""+velocity;
     velocityString = "" + a.substring(0,5);
   }
+  
   void updateViscocity() {
     String a = ""+viscocity;
     viscocityString = a.substring(0, 5);
   }
+  
   boolean start() {
     return (mouseX >= 50 && mouseX <= 50+150 && mouseY <= 525+50  && mouseY >= 525);
   }
+  
   boolean stop() {
     return (mouseX >= 50 && mouseX <= 50+150 && mouseY <= 625+50  && mouseY >= 625);
   }
+  
   boolean density() {
     //center (550,550)
     return (625 >= (mouseX - 550)*(mouseX-550) + (mouseY-550)*(mouseY-550));
   }
+  
   boolean velocity() {
     //center (550,650)
     return (625 >= (mouseX-550)*(mouseX-550)+(mouseY-650)*(mouseY-650));
   }
+  
   void barrier() {
     //1300,700
     if (mouseX <1300 && mouseY <500) {      
       fluidField[mouseX-mouseX%10][mouseY-mouseY%10].solid = true;
     }
   }
+  
   /*rect(750, 650-25/2, 200, 20);
    rect(1000,650-25/2,200,20);  */
 
   boolean velslider() {
-   
     return (mouseX >= 750-25 && mouseX <=950-10-25 && mouseY >=650-25/2 && mouseY<=650+25/2 && mousePressed);
- 
   }
+  
   boolean viscslider() {
     return (mouseX>= 1000 && mouseX<=1200-10 && mouseY >= 650-25/2&& mouseY<=650+25/2 && mousePressed);
-    
   }
+  
 }
