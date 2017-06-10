@@ -4,7 +4,7 @@ public class Element{
     boolean solid;
     boolean inlet;
     boolean outlet;
-    double density, xVelocity, yVelocity, speed;
+    double density, xVelocity, yVelocity, speed, curl;
     public Element(){
       up = down = left = right = northEast = southEast = northWest = southWest = here =  density = xVelocity = yVelocity = speed = 50.0;
       solid = inlet = outlet = false;
@@ -43,7 +43,7 @@ public class Element{
       this.xVelocity = xVelocity;
       this.yVelocity = yVelocity;
       this.speed = speed;
-	 
+	    density = 0.0;
     }
     
     public double getVelocity(){
@@ -118,6 +118,9 @@ public class Element{
     public void setSpeed(double speed){
 	    this.speed = speed;
     }
+    public void setCurl(double curl){
+      this.curl = curl;
+    }
     
     /******************* GETS ******************/
     public double getHere(){
@@ -158,6 +161,9 @@ public class Element{
     }
     public double getSpeed(){
       return speed;
+    }
+    public double getCurl(){
+      return curl;
     }
     public boolean isSolid(){
       return solid;
