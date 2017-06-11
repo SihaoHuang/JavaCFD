@@ -7,7 +7,8 @@ class Simulation {
   Element[][] fluidField;
   Solver solution; 
   
-  double velocity, viscosity, scale;
+  double velocity, viscosity;
+  float scale;
   String velocityString, viscosityString, scaleString;
   boolean densityButton;
   boolean start, stop;
@@ -41,8 +42,9 @@ class Simulation {
 
   void display() {
     if (start()){
-      //solution = new Solver(fluidField, viscosity*100.0, velocity*100.0);
-      solution = new Solver(fluidField, viscosity*100.0 , velocity*40.0 , 0.98);
+      solution = new Solver(fluidField, velocity, viscosity);
+      //solution = new Solver(fluidField, viscosity*100.0 , velocity*40.0 , 0.98);
+      //solution = new Solver(fluidField, 0.1 , 0.02);
     }
     if (solution!= null && start){
       solution.iterate();
@@ -56,12 +58,12 @@ class Simulation {
             stroke(0);
             fill(0);
             rect(i, j, 10, 10);
-            stroke((int)scaleValue(fluidField[i][j].getDensity(), 0.0, 100.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(fluidField[i][j].getDensity(), 0.0, 100.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            stroke((int)scaleValue(fluidField[i][j].getDensity(), 0.0, scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(fluidField[i][j].getDensity(), 0.0, scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
             point(i, j);
           } else {
-            stroke((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 2.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 2.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            stroke((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
             rect(i, j, 10, 10);  
             point(i, j);
           }
@@ -77,12 +79,12 @@ class Simulation {
             stroke(0);
             fill(0);
             rect(i, j, 10, 10);
-            stroke((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            stroke((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
             point(i, j);
           } else {
-            stroke((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            stroke((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
             rect(i, j, 10, 10);  
             point(i, j);
           }
@@ -197,16 +199,16 @@ class Simulation {
     }
     if (velslider()) {
 
-       velocity = (0.120*(mouseX-725)/(200));
+       velocity = (0.150*(mouseX-725)/(200));
 
       slider1X= mouseX;
     }
     if (viscslider()) {
-          viscosity = 0.005 + ((0.2-0.005)*(mouseX-1000)/200);
+          viscosity = 0.005 + ((1-0.005)*(mouseX-1000)/200);
         slider2X= mouseX;
     }
     if (scaleslider()){
-      scale = 0.100+((10.0-0.100)*(mouseX-1300)/200);
+      scale = 0.100+((5.0-0.100)*(mouseX-1300)/200);
       slider3X=mouseX;
     }
     barrier();
@@ -214,16 +216,16 @@ class Simulation {
   
   void updateVelocity() {
     String a = ""+velocity;
-    velocityString = "" + a.substring(0,5);
+    velocityString = "" + a.substring(0,4);
   }
   
   void updateViscosity() {
     String a = ""+viscosity;
-    viscosityString = a.substring(0, 5);
+    viscosityString = a.substring(0, 4);
   }
   void updateScale(){
     String a = "" + scale;
-    scaleString = a.substring(0,5);
+    scaleString = a.substring(0,4);
   }
   boolean start() {
     return (mouseX >= 50 && mouseX <= 50+150 && mouseY <= 525+50  && mouseY >= 525);
