@@ -1,75 +1,47 @@
 public class Solver{
   
-    int rows, cols;
-    Element[][] fluidField; //passed down from Simulation with boundary conditions properly configured
-    int time;
+    int rows, cols; //post-scaled number of elements
+    int time; //universal simulation time
     double viscosity; //fluid viscosity, user input
-    double overallVelocity; //wind tunnel velocity, user input
-    double relaxation;
-    boolean overrideRelaxation;
-    
-    public Solver(Element[][] fluidField, double overallVelocity, double viscosity, double relaxation){
-  		//initializes the simulation
-  		//create elements for each block in the display
-      this.viscosity = viscosity;
-      this.overallVelocity = overallVelocity;
-  		this.fluidField = fluidField;
-  		rows = fluidField.length;
-  		cols = fluidField[0].length;
-  		//initiate fluid with discretized velocity vectors
-      //the probabilities derived from Boltzmann distribution; Weber State University paper
-      //does not matter if element is solid as the solver disregards velocity data 
-      double here = 4.0/9.0 * (1 - 1.5*overallVelocity*overallVelocity);
-      double up = 1.0/9.0 * (1 - 1.5*overallVelocity*overallVelocity);
-      double down = 1.0/9.0 * (1 - 1.5*overallVelocity*overallVelocity);
-      double left = 1.0/9.0 * (1 - 3.0*overallVelocity + 3.0*overallVelocity*overallVelocity);
-      double right = 1.0/9.0 * (1 + 3.0*overallVelocity + 3.0*overallVelocity*overallVelocity);
-      double northEast = 1.0/36.0 * (1 + 3.0*overallVelocity + 3.0*overallVelocity*overallVelocity);
-      double northWest = 1.0/36.0 * (1 - 3.0*overallVelocity + 3.0*overallVelocity*overallVelocity);
-      double southEast = 1.0/36.0 * (1 + 3.0*overallVelocity + 3.0*overallVelocity*overallVelocity);
-      double southWest = 1.0/36.0 * (1 - 3.0*overallVelocity + 3.0*overallVelocity*overallVelocity);
-  		for(int r = 0; r < rows; r++){
-  			for(int c = 0; c< cols; c++){
-          if(fluidField[r][c].isSolid()){ //this section is not necessary
-            fluidField[r][c].setHere(0.0);
-            fluidField[r][c].setUp(0.0);
-            fluidField[r][c].setDown(0.0);
-            fluidField[r][c].setLeft(0.0);
-            fluidField[r][c].setRight(0.0);
-            fluidField[r][c].setNorthEast(0.0); 
-            fluidField[r][c].setNorthWest(0.0); 
-            fluidField[r][c].setSouthEast(0.0); 
-            fluidField[r][c].setSouthWest(0.0); 
-          }
-          fluidField[r][c].setHere(here);
-  			  fluidField[r][c].setUp(up);
-          fluidField[r][c].setDown(down);
-          fluidField[r][c].setLeft(left);
-          fluidField[r][c].setRight(right);
-          fluidField[r][c].setNorthEast(northEast); 
-          fluidField[r][c].setNorthWest(northWest); 
-          fluidField[r][c].setSouthEast(southEast); 
-          fluidField[r][c].setSouthWest(southWest); 
-  			}
-  		}
-  		//set initial time
-  		time = 0;	
-      //overrides relaxation time
-      overrideRelaxation = true;
-      this.relaxation = relaxation;
-    }
-    
-    public Solver(Element[][] fluidField, double overallVelocity, double viscosity){
+    double overallVelocity; //wind tunvelocityRightl velocity, user input
+    double[][] velocityHere;
+    double[][] velocityUp;
+    double[][] velocityDown;
+    double[][] velocityRight;
+    double[][] velocityLeft;
+    double[][] velocitynorthWest;
+    double[][] velocitynorthEast;
+    double[][] velocitySouthWest;
+    double[][] velocitySouthEast;
+    boolean[][] solid;
+    double[][] density;    
+    double[][] vSquared;  
+
+    public Solver(double overallVelocity, double viscosity, int x, int y){
+      
       //initializes the simulation
       //create elements for each block in the display
+      rows = x;
+      cols = y;
       this.viscosity = viscosity;
       this.overallVelocity = overallVelocity;
-      this.fluidField = fluidField;
-      rows = fluidField.length;
-      cols = fluidField[0].length;
+      velocityHere = new double[rows][cols];
+      velocityUp = new double[rows][cols];
+      velocityDown = new double[rows][cols];
+      velocityRight = new double[rows][cols];
+      velocityLeft = new double[rows][cols];
+      velocitynorthWest = new double[rows][cols];
+      velocitynorthEast = new double[rows][cols];
+      velocitySouthWest = new double[rows][cols];
+      velocitySouthEast = new double[rows][cols];
+      solid = new boolean[rows][cols];
+      density = new double[rows][cols];    
+      vSquared = new double[rows][cols];  
+      
       //initiate fluid with discretized velocity vectors
       //the probabilities derived from Boltzmann distribution; Weber State University paper
       //does not matter if element is solid as the solver disregards velocity data 
+      
       double here = 4.0/9.0 * (1 - 1.5*overallVelocity*overallVelocity);
       double up = 1.0/9.0 * (1 - 1.5*overallVelocity*overallVelocity);
       double down = 1.0/9.0 * (1 - 1.5*overallVelocity*overallVelocity);
@@ -79,268 +51,158 @@ public class Solver{
       double northWest = 1.0/36.0 * (1 - 3.0*overallVelocity + 3.0*overallVelocity*overallVelocity);
       double southEast = 1.0/36.0 * (1 + 3.0*overallVelocity + 3.0*overallVelocity*overallVelocity);
       double southWest = 1.0/36.0 * (1 - 3.0*overallVelocity + 3.0*overallVelocity*overallVelocity);
+      
       for(int r = 0; r < rows; r++){
-        for(int c = 0; c< cols; c++){
-          if(fluidField[r][c].isSolid()){ //this section is not necessary
-            fluidField[r][c].setHere(0.0);
-            fluidField[r][c].setUp(0.0);
-            fluidField[r][c].setDown(0.0);
-            fluidField[r][c].setLeft(0.0);
-            fluidField[r][c].setRight(0.0);
-            fluidField[r][c].setNorthEast(0.0); 
-            fluidField[r][c].setNorthWest(0.0); 
-            fluidField[r][c].setSouthEast(0.0); 
-            fluidField[r][c].setSouthWest(0.0); 
-          }
-          else{
-            fluidField[r][c].setHere(here);
-            fluidField[r][c].setUp(up);
-            fluidField[r][c].setDown(down);
-            fluidField[r][c].setLeft(left);
-            fluidField[r][c].setRight(right);
-            fluidField[r][c].setNorthEast(northEast); 
-            fluidField[r][c].setNorthWest(northWest); 
-            fluidField[r][c].setSouthEast(southEast); 
-            fluidField[r][c].setSouthWest(southWest); 
+        for(int c = 0; c < cols; c ++){
+          if (solid[r][c]) {
+            velocityHere[r][c] = 0;
+            velocityRight[r][c] = 0;
+            velocityLeft[r][c] = 0;
+            velocityUp[r][c] = 0;
+            velocityDown[r][c] = 0;
+            velocitynorthEast[r][c] = 0;
+            velocitynorthWest[r][c] = 0;
+            velocitySouthEast[r][c] = 0;
+            velocitySouthWest[r][c] = 0;
+            vSquared[r][c] = 0;
+          } 
+          else {
+            velocityHere[r][c]  = here;
+            velocityRight[r][c]  = right;
+            velocityLeft[r][c]  = left;
+            velocityUp[r][c]  = up;
+            velocityDown[r][c]  = down;
+            velocitynorthEast[r][c] = northEast;
+            velocitySouthEast[r][c] = southEast;
+            velocitynorthWest[r][c] = northWest;
+            velocitySouthWest[r][c] = southWest;
+            density[r][c] = 1;
+            vSquared[r][c] = overallVelocity*overallVelocity;
           }
         }
       }
       //set initial time
       time = 0;  
-      //does not override relaxation time
-      overrideRelaxation = false;
     }
     
-    public void iterate(){ //executes one iteration of algorithm
+    public void iterate(){ 
     	collide();
     	move();
-      collideBoundary();
+      bounce();
       time += 1;
     }
-    
-    //REWRITE COLLIDE!!!!!!!!!!!!!
-    // private void collide(){ //f(x,t+deltat)=f(x,t)+ (feq - finitial)/(tau)
-    //   double relaxationTime;
-    //   if(overrideRelaxation){
-    //     relaxationTime = relaxation;
-    //   }
-    //   else{
-	  //     relaxationTime = 1.0 / (3.0*viscosity + 0.5); //omega in the equation per iteration
-    //   }
-    //   for (int r = 0; r < rows; r++){
-    // 	    for (int c = 0; c < cols; c++){
-    //         if(!fluidField[r][c].isSolid()){
-    //           double sumVelocities = fluidField[r][c].sumVelocities();
-    //           fluidField[r][c].setDensity(sumVelocities);
-              
-    //           //calculate the two basis vectors
-    //           double xVelocity, yVelocity;
-    //           if(sumVelocities > 0){
-    //             xVelocity = (fluidField[r][c].getRight() + fluidField[r][c].getNorthEast() + fluidField[r][c].getSouthEast() 
-    //                         - fluidField[r][c].getLeft() - fluidField[r][c].getNorthWest() - fluidField[r][c].getSouthWest()) / sumVelocities;
-    //             yVelocity = (fluidField[r][c].getUp() + fluidField[r][c].getNorthEast() + fluidField[r][c].getNorthWest()
-    //                         - fluidField[r][c].getDown() - fluidField[r][c].getSouthEast() - fluidField[r][c].getSouthWest()) / sumVelocities;
-    //           }
-    //           else{
-    //             xVelocity = 0;
-    //             yVelocity = 0;
-    //           }
-
-    //           //temporary variables for the quadratic expressoins
-    //           double xVelocitySquared = xVelocity*xVelocity;
-    //           double yVelocitySquared = yVelocity*yVelocity;
-    //           double twoxyVelocities = xVelocity*yVelocity*2.0;
-    //           double velocitySquaredSum = xVelocitySquared + yVelocitySquared;
-              
-    //           //collision code: add new value according to Lattice-Boltzmann algorithm
-    //           fluidField[r][c].setHere(fluidField[r][c].getHere() + relaxationTime * ((4.0/9.0) * sumVelocities * 
-    //                                   (1 - velocitySquaredSum*1.5) - fluidField[r][c].getHere()));
-
-    //           fluidField[r][c].setLeft(fluidField[r][c].getLeft() + relaxationTime * ((1.0/9.0) * sumVelocities * 
-    //                                   (1 - 3.0*xVelocity + 4.5*xVelocitySquared - velocitySquaredSum*1.5) - fluidField[r][c].getLeft()));
-
-    //           fluidField[r][c].setRight(fluidField[r][c].getRight() + relaxationTime * ((1.0/9.0) * sumVelocities * 
-    //                                    (1 + 3.0*xVelocity + 4.5*xVelocitySquared - velocitySquaredSum*1.5) - fluidField[r][c].getRight()));
-
-    //           fluidField[r][c].setUp(fluidField[r][c].getUp() + relaxationTime * ((1.0/9.0) * sumVelocities * 
-    //                                 (1 + 3.0*yVelocity + 4.5*yVelocitySquared - velocitySquaredSum*1.5) - fluidField[r][c].getUp()));
-
-    //           fluidField[r][c].setDown(fluidField[r][c].getDown() + relaxationTime * ((1.0/9.0) * sumVelocities * 
-    //                                   (1 - 3.0*yVelocity + 4.5*yVelocitySquared - velocitySquaredSum*1.5) - fluidField[r][c].getDown()));
-
-    //           fluidField[r][c].setNorthEast(fluidField[r][c].getNorthEast() + relaxationTime * ((1.0/36.0) * sumVelocities * 
-    //                                        (1 + 3.0*xVelocity + 3.0*yVelocity + 4.5*(velocitySquaredSum + twoxyVelocities) - 
-    //                                        velocitySquaredSum*1.5) - fluidField[r][c].getNorthEast()));
-
-    //           fluidField[r][c].setNorthWest(fluidField[r][c].getNorthWest() + relaxationTime * ((1.0/36.0) * sumVelocities * 
-    //                                        (1 - 3.0*xVelocity + 3.0*yVelocity + 4.5*(velocitySquaredSum - twoxyVelocities) - 
-    //                                        velocitySquaredSum*1.5) - fluidField[r][c].getNorthWest()));
-
-    //           fluidField[r][c].setSouthEast(fluidField[r][c].getSouthEast() + relaxationTime * ((1.0/36.0) * sumVelocities * 
-    //                                        (1 + 3.0*xVelocity - 3.0*yVelocity + 4.5*(velocitySquaredSum - twoxyVelocities) - 
-    //                                        velocitySquaredSum*1.5) - fluidField[r][c].getSouthEast()));
-
-    //           fluidField[r][c].setSouthWest(fluidField[r][c].getSouthWest() + relaxationTime * ((1.0/36.0) * sumVelocities * 
-    //                                        (1 - 3.0*xVelocity - 3.0*yVelocity + 4.5*(velocitySquaredSum + twoxyVelocities) - 
-    //                                        velocitySquaredSum*1.5) - fluidField[r][c].getSouthWest()));
-
-    //         }
-    // 	    }
-    // 	}
-    // }
-
-    public void collide(){
-      double relaxationTime;
-      if(overrideRelaxation){
-        relaxationTime = relaxation;
-      }
-      else{
-	      relaxationTime = 1.0 / (3.0*viscosity + 0.5); //omega in the equation per iteration
-      }
-      for(int r = 0; r  < rows; r ++){
-        for(int c = 0; c < cols; c ++){
-          if(!fluidField[r][c].isSolid()){
-            double sumVelocities = fluidField[r][c].sumVelocities();
-            fluidField[r][c].setDensity(sumVelocities);
-
+      
+    private void collide() {
+      
+      double sumVelocities;
+      double relaxationTime = 1 / (3*viscosity + 0.5);  
+      
+      for (int x=0; x<rows; x++) {
+        for (int y=0; y<cols; y++) {
+          
+          if (!solid[x][y]) {
+            
+            sumVelocities = velocityHere[x][y] + velocityUp[x][y] + velocityDown[x][y] + velocityRight[x][y] + velocityLeft[x][y] + velocitynorthWest[x][y] + velocitynorthEast[x][y] + velocitySouthWest[x][y] + velocitySouthEast[x][y];
+            density[x][y] = sumVelocities;    
             double xVelocity;
             double yVelocity;
-            if(sumVelocities > 0){
-              xVelocity = (fluidField[r][c].getRight() + fluidField[r][c].getNorthEast() 
-                          + fluidField[r][c].getSouthEast() - fluidField[r][c].getLeft()
-                          - fluidField[r][c].getNorthWest() - fluidField[r][c].getSouthWest()) / sumVelocities;
-              yVelocity = (fluidField[r][c].getUp() + fluidField[r][c].getNorthEast() 
-                          + fluidField[r][c].getNorthWest() - fluidField[r][c].getDown()
-                          - fluidField[r][c].getSouthEast() - fluidField[r][c].getSouthWest()) / sumVelocities;
-            }
+            
+            if (sumVelocities > 0) {
+              xVelocity = (velocityRight[x][y] + velocitynorthEast[x][y]
+                 + velocitySouthEast[x][y] - velocityLeft[x][y] 
+                 - velocitynorthWest[x][y] - velocitySouthWest[x][y]) / sumVelocities;
+              yVelocity = (velocityUp[x][y] + velocitynorthEast[x][y] 
+                 + velocitynorthWest[x][y] - velocityDown[x][y] 
+                 - velocitySouthEast[x][y] - velocitySouthWest[x][y]) / sumVelocities;
+            } 
             else{
-              xVelocity = yVelocity = 0;
+              xVelocity = 0;
+              yVelocity = 0;
             }
-
+            
             double threeXVelocity = 3.0 * xVelocity;
             double threeYVelocity = 3.0 * yVelocity;
             double xVelocitySquared = xVelocity * xVelocity;
             double yVelocitySquared = yVelocity * yVelocity;
             double twoXYVelocities = 2 * xVelocity * yVelocity;
             double sumSquares = xVelocitySquared + yVelocitySquared;
-
-            fluidField[r][c].setHere(fluidField[r][c].getHere() + relaxationTime * 
-                                    (4.0/9.0 * sumVelocities * (1 - 1.5*sumSquares)
-                                     - fluidField[r][c].getHere()));
-            fluidField[r][c].setRight(fluidField[r][c].getRight() + relaxationTime * 
-                                    (1.0/9.0 * (1 + threeXVelocity + 4.5*xVelocitySquared - 1.5*sumSquares)
-                                     - fluidField[r][c].getRight()));
-            fluidField[r][c].setLeft(fluidField[r][c].getLeft() + relaxationTime * 
-                                    (1.0/9.0 * (1 - threeXVelocity + 4.5*xVelocitySquared - 1.5*sumSquares)
-                                     - fluidField[r][c].getLeft()));
-            fluidField[r][c].setUp(fluidField[r][c].getUp() + relaxationTime * 
-                                    (1.0/9.0 * (1 + threeYVelocity + 4.5*yVelocitySquared - 1.5*sumSquares)
-                                     - fluidField[r][c].getUp()));
-            fluidField[r][c].setDown(fluidField[r][c].getDown() + relaxationTime * 
-                                    (1.0/9.0 * (1 - threeYVelocity + 4.5*yVelocitySquared - 1.5*sumSquares)
-                                     - fluidField[r][c].getDown()));
-            fluidField[r][c].setNorthEast(fluidField[r][c].getNorthEast() + relaxationTime * 
-                                    (1.0/36.0 * (1 + threeXVelocity + threeYVelocity + 4.5*(sumSquares + twoXYVelocities) - 1.5*sumSquares)
-                                     - fluidField[r][c].getNorthEast()));
-            fluidField[r][c].setNorthWest(fluidField[r][c].getNorthWest() + relaxationTime * 
-                                    (1.0/36.0 * (1 - threeXVelocity + threeYVelocity + 4.5*(sumSquares - twoXYVelocities) - 1.5*sumSquares)
-                                     - fluidField[r][c].getNorthWest()));
-            fluidField[r][c].setSouthEast(fluidField[r][c].getSouthEast() + relaxationTime * 
-                                    (1.0/36.0 * (1 + threeXVelocity - threeYVelocity + 4.5*(sumSquares - twoXYVelocities) - 1.5*sumSquares)
-                                     - fluidField[r][c].getSouthEast()));
-            fluidField[r][c].setSouthWest(fluidField[r][c].getSouthWest() + relaxationTime * 
-                                    (1.0/36.0 * (1 - threeXVelocity - threeYVelocity + 4.5*(sumSquares + twoXYVelocities) - 1.5*sumSquares)
-                                     - fluidField[r][c].getSouthWest()));
+            
+            vSquared[x][y] = sumSquares;  
+            
+            velocityHere[x][y]  += relaxationTime * ((4.0/9.0)*sumVelocities 
+                                   * (1 - 1.5*sumSquares) - velocityHere[x][y]);
+            velocityRight[x][y]  += relaxationTime * ((1.0/9.0)*sumVelocities 
+                                   * (1 + threeXVelocity + 4.5*xVelocitySquared - 1.5*sumSquares) - velocityRight[x][y]);
+            velocityLeft[x][y]  += relaxationTime * ((1.0/9.0)*sumVelocities 
+                                   * (1 - threeXVelocity + 4.5*xVelocitySquared - 1.5*sumSquares) - velocityLeft[x][y]);
+            velocityUp[x][y]  += relaxationTime * ((1.0/9.0)*sumVelocities 
+                                   * (1 + threeYVelocity + 4.5*yVelocitySquared - 1.5*sumSquares) - velocityUp[x][y]);
+            velocityDown[x][y]  += relaxationTime * ((1.0/9.0)*sumVelocities 
+                                   * (1 - threeYVelocity + 4.5*yVelocitySquared - 1.5*sumSquares) - velocityDown[x][y]);
+                                   
+            velocitynorthEast[x][y] += relaxationTime * ((1.0/36.0)*sumVelocities 
+                                   * (1 + threeXVelocity + threeYVelocity + 4.5*(sumSquares + twoXYVelocities) - 1.5*sumSquares) - velocitynorthEast[x][y]);
+            velocitynorthWest[x][y] += relaxationTime * ((1.0/36.0)*sumVelocities 
+                                   * (1 - threeXVelocity + threeYVelocity + 4.5*(sumSquares - twoXYVelocities) - 1.5*sumSquares) - velocitynorthWest[x][y]);
+            velocitySouthEast[x][y] += relaxationTime * ((1.0/36.0)*sumVelocities 
+                                   * (1 + threeXVelocity - threeYVelocity + 4.5*(sumSquares - twoXYVelocities) - 1.5*sumSquares) - velocitySouthEast[x][y]);
+            velocitySouthWest[x][y] += relaxationTime * ((1.0/36.0)*sumVelocities 
+                                   * (1 - threeXVelocity - threeYVelocity + 4.5*(sumSquares + twoXYVelocities) - 1.5*sumSquares) - velocitySouthWest[x][y]);
+          
           }
         }
       }
     }
 
-    private void collideBoundary(){ //performs collisions for boundary conditions
-      for(int r = 0; r < rows; r++){
-        for(int c = 0; c < cols; c++){
-          if(fluidField[r][c].isSolid()){ 
-            //for every direction, bounce back in opposite direction by setting the element as v_original + v_bounced
-            //then set the local velocity vector as zero
-            if (fluidField[r][c].getUp() > 0){
-              fluidField[r][c - 1].setDown(fluidField[r][c - 1].getDown() + fluidField[r][c].getUp());
-              fluidField[r][c].setUp(0.0);
-            }
-            if (fluidField[r][c].getDown() > 0){
-              fluidField[r][c + 1].setUp(fluidField[r][c + 1].getUp() + fluidField[r][c].getDown());
-              fluidField[r][c].setDown(0.0);
-            }
-            if (fluidField[r][c].getLeft() > 0){
-              fluidField[r + 1][c].setRight(fluidField[r + 1][c].getRight() + fluidField[r][c].getLeft());
-              fluidField[r][c].setLeft(0.0);
-            }
-            if (fluidField[r][c].getRight() > 0){
-              fluidField[r - 1][c].setLeft(fluidField[r - 1][c].getLeft() + fluidField[r][c].getRight());
-              fluidField[r][c].setRight(0.0);
-            }
-            if (fluidField[r][c].getNorthEast() > 0){
-              fluidField[r - 1][c - 1].setSouthWest(fluidField[r - 1][c - 1].getSouthWest() + fluidField[r][c].getNorthEast());
-              fluidField[r][c].setNorthEast(0.0);
-            }
-            if (fluidField[r][c].getNorthWest() > 0){
-              fluidField[r + 1][c - 1].setSouthEast(fluidField[r + 1][c - 1].getSouthEast() + fluidField[r][c].getNorthWest());
-              fluidField[r][c].setNorthWest(0.0);
-            }
-            if (fluidField[r][c].getSouthEast() > 0){
-              fluidField[r - 1][c + 1].setNorthWest(fluidField[r - 1][c + 1].getNorthWest() + fluidField[r][c].getSouthEast());
-              fluidField[r][c].setSouthEast(0.0);
-            }
-            if (fluidField[r][c].getSouthWest() > 0){
-              fluidField[r + 1][c + 1].setNorthEast(fluidField[r + 1][c + 1].getNorthEast() + fluidField[r][c].getSouthWest());
-              fluidField[r][c].setSouthWest(0.0);
+    private void bounce(){ 
+     for (int x=0; x<rows; x++) {
+          for (int y=0; y<cols; y++) {
+            if (solid[x][y]) {
+              if (velocityUp[x][y] > 0) { 
+                velocityDown[x][y-1] += velocityUp[x][y]; 
+                velocityUp[x][y] = 0; 
+              }
+              if (velocityDown[x][y] > 0) { 
+                velocityUp[x][y+1] += velocityDown[x][y]; 
+                velocityDown[x][y] = 0; 
+              }
+              if (velocityRight[x][y] > 0) { 
+                velocityLeft[x-1][y] += velocityRight[x][y]; 
+                velocityRight[x][y] = 0; 
+              }
+              if (velocityLeft[x][y] > 0) { 
+                velocityRight[x+1][y] += velocityLeft[x][y]; 
+                velocityLeft[x][y] = 0; 
+              }
+              if (velocitynorthWest[x][y] > 0) { 
+                velocitySouthEast[x+1][y-1] += velocitynorthWest[x][y]; 
+                velocitynorthWest[x][y] = 0; 
+              }
+              if (velocitynorthEast[x][y] > 0) { 
+                velocitySouthWest[x-1][y-1] += velocitynorthEast[x][y]; 
+                velocitynorthEast[x][y] = 0; 
+              }
+              if (velocitySouthWest[x][y] > 0) { 
+                velocitynorthEast[x+1][y+1] += velocitySouthWest[x][y]; 
+                velocitySouthWest[x][y] = 0; 
+              }
+              if (velocitySouthEast[x][y] > 0) { 
+                velocitynorthWest[x-1][y+1] += velocitySouthEast[x][y]; 
+                velocitySouthEast[x][y] = 0; 
+              }
             }
           }
         }
-      }
     }
     
-    private void move(){ //f(x+e*deltat, t+deltat)=f(x,t+deltat)  
-
-      //start with the two edges
-      for(int c = 0; c < cols - 1; c ++){
-        fluidField[0][c].setDown(fluidField[0][c + 1].getDown());
-      }
-      for(int c = cols - 1; c > 0; c --){
-        fluidField[rows - 1][c].setUp(fluidField[rows -1][c - 1].getUp());
-      }
-
-      //move elements using four corner vectors, handling all 8 directions
-      for(int r = 0; r < rows - 1; r ++){
-        for(int c = cols - 1; c > 0; c --){
-          fluidField[r][c].setUp(fluidField[r][c - 1].getUp()); //move up
-          fluidField[r][c].setNorthWest(fluidField[r + 1][c - 1].getNorthWest()); //move northwest
-        }
-      }
-      for(int r = 0; r < rows - 1; r ++){
-        for(int c = 0; c < cols - 1; c ++){
-          fluidField[r][c].setLeft(fluidField[r + 1][c].getLeft()); //move left
-          fluidField[r][c].setSouthWest(fluidField[r + 1][c + 1].getSouthWest()); //move southwest
-        }
-      }
-      for(int r = rows - 1; r > 0; r --){
-        for(int c = cols - 1; c > 0; c --){
-          fluidField[r][c].setRight(fluidField[r - 1][c].getRight()); //move right
-          fluidField[r][c].setNorthEast(fluidField[r - 1][c - 1].getNorthEast()); //move northeast
-        }
-      }
-      for(int r = rows - 1; r > 0; r --){
-        for(int c = 0; c < cols - 1; c ++){
-          fluidField[r][c].setDown(fluidField[r][c + 1].getDown()); //move down
-          fluidField[r][c].setSouthEast(fluidField[r - 1][c + 1].getSouthEast()); //move southeast
-        }
-      }
-
-      //set of constants, most of these are for later. MOVE AS INSTANCE VARIABLES IF NEEDED
-      double threeTimesOverallVelocity = 3.0*overallVelocity;
-      double threeTimesOverallVelocitySquared = threeTimesOverallVelocity*overallVelocity;
-      double here = 4.0/9.0 * (1 - 1.5*overallVelocity*overallVelocity);
-      double up = 1.0/9.0 * (1 - 1.5*overallVelocity*overallVelocity);
-      double down = 1.0/9.0 * (1 - 1.5*overallVelocity*overallVelocity);
+    private void move(){ //f(x+e*deltat, t+deltat)=f(x,t+deltat) 
+    
+      double v = overallVelocity;
+      double threeTimesOverallVelocity = 3.0*v;
+      double threeTimesOverallVelocitySquared = threeTimesOverallVelocity*v;
+      double here = 4.0/9.0 * (1 - 1.5*v*v);
+      double up = 1.0/9.0 * (1 - 1.5*v*v);
+      double down = 1.0/9.0 * (1 - 1.5*v*v);
       double left = 1.0/9.0 * (1 - threeTimesOverallVelocity + threeTimesOverallVelocitySquared);
       double right = 1.0/9.0 * (1 + threeTimesOverallVelocity + threeTimesOverallVelocitySquared);
       double northEast = 1.0/36.0 * (1 + threeTimesOverallVelocity + threeTimesOverallVelocitySquared);
@@ -348,51 +210,95 @@ public class Solver{
       double southEast = 1.0/36.0 * (1 + threeTimesOverallVelocity + threeTimesOverallVelocitySquared);
       double southWest = 1.0/36.0 * (1 - threeTimesOverallVelocity + threeTimesOverallVelocitySquared);
       
-      //stream inlet conditions
-      for(int c = 0; c < cols; c ++){
-        if(!fluidField[0][c].isSolid()){
-          // fluidField[0][c].setRight(20);
-          // fluidField[0][c].setNorthEast(30);
-          // fluidField[0][c].setSouthEast(10);
-          fluidField[0][c].setRight(right);
-          fluidField[0][c].setNorthEast(northEast);
-          fluidField[0][c].setSouthEast(southEast);
+      for (int c = 0; c < cols - 1; c ++) {
+        velocityDown[0][c] = velocityDown[0][c+1];
+      }
+      
+      for (int c = cols - 1; c > 0; c --) {
+        velocityUp[rows - 1][c] = velocityUp[rows - 1][c - 1];
+      }
+      
+      for (int r=0; r < rows - 1; r ++) {    
+        for (int c = cols - 1; c > 0; c --) {
+          velocityUp[r][c] = velocityUp[r][c - 1];   
+          velocitynorthWest[r][c] = velocitynorthWest[r + 1][c - 1];  
+        }
+      }
+      
+      for (int r = rows-1; r >0; r --) {  
+        for (int c = cols-1; c > 0; c--) {
+          velocityRight[r][c] = velocityRight[r - 1][c];  
+          velocitynorthEast[r][c] = velocitynorthEast[r - 1][c-1];  
+        }
+      }
+      
+      for (int r = rows-1; r > 0; r --) {   
+        for (int c = 0; c < cols - 1; c++) {
+          velocityDown[r][c] = velocityDown[r][c + 1];  
+          velocitySouthEast[r][c] = velocitySouthEast[r - 1][c + 1];  
+        }
+      }
+      
+      for (int r = 0; r < rows-1; r ++) {  
+        for (int c = 0; c < cols - 1; c ++) {
+          velocityLeft[r][c] = velocityLeft[r + 1][c];
+          velocitySouthWest[r][c] = velocitySouthWest[r + 1][c + 1];  
+        }
+      }
+      
+      for (int y=0; y<cols; y++) {
+        if (!solid[0][y]) {
+          velocityRight[0][y] = right;
+          velocitynorthEast[0][y] = northEast;
+          velocitySouthEast[0][y] = southEast;
         }
       }
 
-      //stream outlet conditions. MIGHT NOT BE REQUIRED
-      for(int c = 0; c < cols; c ++){
-        fluidField[rows - 1][c].setLeft(left);
-        fluidField[rows - 1][c].setNorthWest(northWest);
-        fluidField[rows - 1][c].setSouthWest(southWest);
+      for (int y=0; y<cols; y++) {
+        if (!solid[0][y]) {
+          velocityLeft[rows-1][y] = left;
+          velocitynorthWest[rows-1][y] = northWest;
+          velocitySouthWest[rows-1][y] = southWest;
+        }
       }
 
-      //stream top and bottom
-      for (int r = 0; r < rows; r ++) {
-        
-        //reinit top boundary
-        fluidField[r][0].setHere(here);
-  			fluidField[r][0].setUp(up);
-        fluidField[r][0].setDown(down);
-        fluidField[r][0].setLeft(left);
-        fluidField[r][0].setRight(right);
-        fluidField[r][0].setNorthEast(northEast); 
-        fluidField[r][0].setNorthWest(northWest); 
-        fluidField[r][0].setSouthEast(southEast); 
-        fluidField[r][0].setSouthWest(southWest); 
-        //reinit bottom boundary
-        fluidField[r][cols - 1].setHere(here);
-  			fluidField[r][cols - 1].setUp(up);
-        fluidField[r][cols - 1].setDown(down);
-        fluidField[r][cols - 1].setLeft(left);
-        fluidField[r][cols - 1].setRight(right);
-        fluidField[r][cols - 1].setNorthEast(northEast); 
-        fluidField[r][cols - 1].setNorthWest(northWest); 
-        fluidField[r][cols - 1].setSouthEast(southEast); 
-        fluidField[r][cols - 1].setSouthWest(southWest); 
-
+      for (int x=0; x<rows; x++) {
+        velocityHere[x][0]  = here;
+        velocityRight[x][0]  = right;
+        velocityLeft[x][0]  = left;
+        velocityUp[x][0]  = up;
+        velocityDown[x][0]  = down;
+        velocitynorthEast[x][0] = northEast;
+        velocitySouthEast[x][0] = southEast;
+        velocitynorthWest[x][0] = northWest;
+        velocitySouthWest[x][0] = southWest;
+        velocityHere[x][cols-1]  = here;
+        velocityRight[x][cols-1]  = right;
+        velocityLeft[x][cols-1]  = left;
+        velocityUp[x][cols-1]  = up;
+        velocityDown[x][cols-1]  = down;
+        velocitynorthEast[x][cols-1] = northEast;
+        velocitySouthEast[x][cols-1] = southEast;
+        velocitynorthWest[x][cols-1] = northWest;
+        velocitySouthWest[x][cols-1] = southWest;
       }
  
+    }
+    
+    public void setSolid(int r, int c){
+      solid[r][c] = true;
+    }
+    
+    public boolean isSolid(int r, int c){
+      return solid[r][c];
+    }
+    
+    public double getVelocity(int r, int c){
+      return vSquared[r][c];
+    }
+    
+    public double getDensity(int r, int c){
+      return density[r][c];
     }
     
 }

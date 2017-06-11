@@ -4,7 +4,6 @@ class Simulation {
   int totalIterations; 
   int rows;
   int cols;
-  Element[][] fluidField;
   Solver solution; 
   
   double velocity, viscosity;
@@ -21,13 +20,6 @@ class Simulation {
   Simulation(int rows, int cols) {
     this.rows = rows;
     this.cols = cols;
-    fluidField = new Element[rows/5][cols/5];
-    for (int i = 0; i < rows/5.0; i++) {
-      for (int j = 0; j < cols/5.0; j++) {
-        fluidField[i][j] = new Element();
-        fluidField[i][j].setHere(random(20));
-      }
-    }
     start = false;
     stop = true;
     slider1X= 750-25;
@@ -38,13 +30,12 @@ class Simulation {
     scale = 0.101;
     velocityString = viscosityString = scaleString ="";
     densityButton = true;
+    solution = new Solver(velocity, viscosity, rows/5, cols/5);
   }
 
   void display() {
     if (start()){
-      solution = new Solver(fluidField, velocity, viscosity);
-      //solution = new Solver(fluidField, viscosity*100.0 , velocity*40.0 , 0.98);
-      //solution = new Solver(fluidField, 0.1 , 0.02);
+      solution = new Solver(velocity, viscosity, rows/5, cols/5);
     }
     if (solution!= null && start){
       solution.iterate();
@@ -54,17 +45,17 @@ class Simulation {
       for (int i = 0; i < rows/5; i++) {
         for (int j = 0; j < cols/5; j++) {
           colorMode(HSB, 100);
-          if (fluidField[i][j].solid){
+          if (solution.isSolid(i, j)){
             stroke(0);
             fill(0);
-            rect(i*5, j*5, 5, 5);
-            stroke((int)scaleValue(fluidField[i][j].getDensity(), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(fluidField[i][j].getDensity(), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            rect(i*5, j*5, 10, 10);
+            stroke((int)scaleValue(solution.getDensity(i ,j), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(solution.getDensity(i, j), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
             point(i*5, j*5);
           } else {
-            stroke((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
-            rect(i*5, j*5, 5, 5);  
+            stroke((int)scaleValue(solution.getVelocity(i, j), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(solution.getVelocity(i, j), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            rect(i*5, j*5, 10, 10);  
             point(i*5, j*5);
           }
         }
@@ -75,16 +66,16 @@ class Simulation {
       for (int i = 0; i < rows/5; i++) {
         for (int j = 0; j < cols/5; j++) {
           colorMode(HSB, 100);
-          if (fluidField[i][j].solid){
+          if (solution.isSolid(i, j)){
             stroke(0);
             fill(0);
-            rect(i*5, j*5, 5, 5);
-            stroke((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            rect(i*5, j*5, 10, 10);
+            stroke((int)scaleValue(solution.getDensity(i, j), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(solution.getDensity(i ,j), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
             point(i*5, j*5);
           } else {
-            stroke((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            stroke((int)scaleValue(solution.getDensity(i, j), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(solution.getDensity(i, j), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
             rect(i*5, j*5, 10, 10);  
             point(i*5, j*5);
           }
@@ -204,7 +195,7 @@ class Simulation {
       slider1X= mouseX;
     }
     if (viscslider()) {
-          viscosity = 0.005 + ((1-0.005)*(mouseX-1000)/200);
+          viscosity = 0.005 + ((0.5-0.005)*(mouseX-1000)/200);
         slider2X= mouseX;
     }
     if (scaleslider()){
@@ -248,7 +239,7 @@ class Simulation {
   void barrier() {
     //1300,700
     if (mouseX <1300 && mouseY <500) {      
-      fluidField[mouseX/5][mouseY/5].solid = true;
+      solution.setSolid(mouseX/5, mouseY/5);
     }
   }
   
