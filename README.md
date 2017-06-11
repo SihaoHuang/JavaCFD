@@ -1,4 +1,4 @@
-JavaCFD
+<h1>JavaCFD</h1><br>
 Computational fluid dynamics software written in Java using the Lattice-Boltzmann method. Allows custom-defined, arbitrary geometries in 2D incompressible flow field.
 
 <hr><br>
