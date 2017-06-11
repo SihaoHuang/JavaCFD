@@ -21,9 +21,9 @@ class Simulation {
   Simulation(int rows, int cols) {
     this.rows = rows;
     this.cols = cols;
-    fluidField = new Element[rows][cols];
-    for (int i = 0; i < rows; i++) {
-      for (int j = 0; j < cols; j++) {
+    fluidField = new Element[rows/5][cols/5];
+    for (int i = 0; i < rows/5.0; i++) {
+      for (int j = 0; j < cols/5.0; j++) {
         fluidField[i][j] = new Element();
         fluidField[i][j].setHere(random(20));
       }
@@ -51,42 +51,42 @@ class Simulation {
     }
     // renders fluid field by velocity
     if(!densityButton){
-      for (int i = 0; i < rows; i+=10) {
-        for (int j = 0; j < cols; j+=10) {
+      for (int i = 0; i < rows/5; i++) {
+        for (int j = 0; j < cols/5; j++) {
           colorMode(HSB, 100);
           if (fluidField[i][j].solid){
             stroke(0);
             fill(0);
-            rect(i, j, 10, 10);
-            stroke((int)scaleValue(fluidField[i][j].getDensity(), 0.0, scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(fluidField[i][j].getDensity(), 0.0, scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
-            point(i, j);
+            rect(i*5, j*5, 5, 5);
+            stroke((int)scaleValue(fluidField[i][j].getDensity(), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(fluidField[i][j].getDensity(), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            point(i*5, j*5);
           } else {
-            stroke((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
-            rect(i, j, 10, 10);  
-            point(i, j);
+            stroke((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            rect(i*5, j*5, 5, 5);  
+            point(i*5, j*5);
           }
         }
       }
     }
     // renders fluid field by density
     else{
-      for (int i = 0; i < rows; i+=10) {
-        for (int j = 0; j < cols; j+=10) {
+      for (int i = 0; i < rows/5; i++) {
+        for (int j = 0; j < cols/5; j++) {
           colorMode(HSB, 100);
           if (fluidField[i][j].solid){
             stroke(0);
             fill(0);
-            rect(i, j, 10, 10);
-            stroke((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
-            point(i, j);
+            rect(i*5, j*5, 5, 5);
+            stroke((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            point(i*5, j*5);
           } else {
-            stroke((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
-            rect(i, j, 10, 10);  
-            point(i, j);
+            stroke((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            rect(i*5, j*5, 10, 10);  
+            point(i*5, j*5);
           }
         }
       }
@@ -248,7 +248,7 @@ class Simulation {
   void barrier() {
     //1300,700
     if (mouseX <1300 && mouseY <500) {      
-      fluidField[mouseX-mouseX%10][mouseY-mouseY%10].solid = true;
+      fluidField[mouseX/5][mouseY/5].solid = true;
     }
   }
   
