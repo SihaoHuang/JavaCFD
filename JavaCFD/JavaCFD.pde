@@ -22,7 +22,7 @@ int cols;
 
 void setup(){
 
-  size(1300, 700);
+  size(1525, 700);
   rows = width;
   cols = height;
   
