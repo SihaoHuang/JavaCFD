@@ -18,6 +18,10 @@ If the fluid looks like it is being infested with a red virus erasing all the el
 <br>
 Note that the simulation is highly CPU intensive and only small fluid fields should be attempted on most machines. <br>
 
+<hr>
+***NonOOP is the best version*** <br>
+The object oriented version is included as it runs but is unstable and inaccurate. This is what was described in the project prototype and introduces new methods (NonOOP LBM on its own is kind of boring and is written in the same way as C/Fortran implementations which have been used in commercial products for decades). <br>
+
 <hr><br>
 
 Computational fluid dynamics is used extensively in engineering to accurately model fluid flow and its associated phenomena. Turbulent flow/hypersonic flow/vortex shredding etc can be simulated using the Navier-Stokes equations, which describe fluid flow using the conservation of momenta and mass flow. However, as they are nonlinear partial differential equations, a solver is very difficult to code.<br> 
@@ -29,6 +33,6 @@ Written for Mr. Konstantinovich's AP Computer Science Class, Stuyvesant High Sch
 References:
 The bulk of the math comes from Alex Wagner's paper, A Practical Introduction to the Lattice-Boltzmann Method. https://www.ndsu.edu/fileadmin/physics.ndsu.edu/Wagner/LBbook.pdf <br>
 Lindsay Crowl's GSAC Talk, http://www.math.utah.edu/~crowl/pres.pdf <br>
-Weber State University's project on Lattice-Boltzmann, http://physics.weber.edu/schroeder/javacourse/LatticeBoltzmann.pdf
+Great thanks to Weber State University's project on Lattice-Boltzmann, which outlined the equations and steps in ggreat detail http://physics.weber.edu/schroeder/javacourse/LatticeBoltzmann.pdf
 <hr><br>
 *WORK IN PROGRESS*
