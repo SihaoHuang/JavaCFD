@@ -7,7 +7,8 @@ class Simulation {
   Element[][] fluidField;
   Solver solution; 
   
-  double velocity, viscosity, scale;
+  double velocity, viscosity;
+  float scale;
   String velocityString, viscosityString, scaleString;
   boolean densityButton;
   boolean start, stop;
@@ -56,12 +57,12 @@ class Simulation {
             stroke(0);
             fill(0);
             rect(i, j, 10, 10);
-            stroke((int)scaleValue(fluidField[i][j].getDensity(), 0.0, 100.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(fluidField[i][j].getDensity(), 0.0, 100.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            stroke((int)scaleValue(fluidField[i][j].getDensity(), 0.0, 100.0*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(fluidField[i][j].getDensity(), 0.0, 100.0*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
             point(i, j);
           } else {
-            stroke((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 2.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 2.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            stroke((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 2.0*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(fluidField[i][j].getVelocity(), 0.0, 2.0*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
             rect(i, j, 10, 10);  
             point(i, j);
           }
@@ -77,12 +78,12 @@ class Simulation {
             stroke(0);
             fill(0);
             rect(i, j, 10, 10);
-            stroke((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            stroke((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
             point(i, j);
           } else {
-            stroke((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            stroke((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(fluidField[i][j].sumVelocities(), 0.0, 1.0*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
             rect(i, j, 10, 10);  
             point(i, j);
           }
