@@ -1,4 +1,3 @@
-
 <h1>JavaCFD</h1><br>
 Computational fluid dynamics software written in Java using the Lattice-Boltzmann method. Allows custom-defined, arbitrary geometries in 2D incompressible flow field.<br>
 
@@ -9,9 +8,9 @@ Computational fluid dynamics software written in Java using the Lattice-Boltzman
 3) click start, and draw geometry on the fluid field by clicking and dragging<br>
 - set the scaling slider to optimize display<br>
 - clicking start again resets the simulation<br>
-- enter 1 on the keyboard for a line, 2 for a line at 45 degrees, and 3 for a circle (there is no need to click the start button in this case: it runs automatically) <br><br>
+- enter 1 on the keyboard for a line, 2 for a line at 45 degrees, and 3 for a circle (there is no need to click the start button in this case: it runs automatically) <br>
 - when in doubt, reset the fluid! Play with the scaling slider a lot as it requires somewhat different values for different display modes/simulations <br>
-- viscosity should be somewhat on the low end, otherwise the calculated relaxation time will cause inaccurate flow <br>
+- viscosity should be somewhat on the low end, otherwise the calculated relaxation time will cause inaccurate flow <br><br>
 
 If the screen has a uniform color, adjust the scale slider until you have good contrast. It is good to start on velocity mode as that gives the normal, intuitive picture of fluid flow.<br>
 
@@ -35,5 +34,5 @@ Written for Mr. Konstantinovich's AP Computer Science Class, Stuyvesant High Sch
 <b>References:</b><br>
 The bulk of the math comes from Alex Wagner's paper, A Practical Introduction to the Lattice-Boltzmann Method. https://www.ndsu.edu/fileadmin/physics.ndsu.edu/Wagner/LBbook.pdf <br>
 Lindsay Crowl's GSAC Talk, http://www.math.utah.edu/~crowl/pres.pdf <br>
-Great thanks to Weber State University's project on Lattice-Boltzmann, which outlined the equations and steps in ggreat detail http://physics.weber.edu/schroeder/javacourse/LatticeBoltzmann.pdf
+Great thanks to Weber State University's project on Lattice-Boltzmann, which outlined the equations and steps in great detail http://physics.weber.edu/schroeder/javacourse/LatticeBoltzmann.pdf
 
