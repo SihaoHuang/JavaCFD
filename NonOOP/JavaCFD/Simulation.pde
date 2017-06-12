@@ -42,46 +42,48 @@ class Simulation {
       solution.iterate();
     }
     
+    if(totalIterations % 2 == 0){ //redraw every two iterations
     // renders fluid field by velocity
     if(!densityButton){
-      for (int i = 0; i < rows/5; i++) {
-        for (int j = 0; j < cols/5; j++) {
-          colorMode(HSB, 100);
-          if (solution.isSolid(i, j)){
-            stroke(0);
-            fill(0);
-            rect(i*5, j*5, 10, 10);
-            stroke((int)scaleValue(solution.getDensity(i ,j), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(solution.getDensity(i, j), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
-            point(i*5, j*5);
-          } else {
-            stroke((int)scaleValue(solution.getVelocity(i, j), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(solution.getVelocity(i, j), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
-            rect(i*5, j*5, 10, 10);  
-            point(i*5, j*5);
+        for (int i = 0; i < rows/5; i++) {
+          for (int j = 0; j < cols/5; j++) {
+            colorMode(HSB, 100);
+            if (solution.isSolid(i, j)){
+              stroke(0);
+              fill(0);
+              rect(i*5, j*5, 10, 10);
+              stroke((int)scaleValue(solution.getDensity(i ,j), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+              fill((int)scaleValue(solution.getDensity(i, j), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+              point(i*5, j*5);
+            } else {
+              stroke((int)scaleValue(solution.getVelocity(i, j), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+              fill((int)scaleValue(solution.getVelocity(i, j), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+              rect(i*5, j*5, 10, 10);  
+              point(i*5, j*5);
+            }
           }
         }
       }
-    }
-    
-    // renders fluid field by density
-    else{
-      for (int i = 0; i < rows/5; i++) {
-        for (int j = 0; j < cols/5; j++) {
-          colorMode(HSB, 100);
-          if (solution.isSolid(i, j)){
-            stroke(0);
-            fill(0);
-            rect(i*5, j*5, 10, 10);
-            //println(solution.getDensity(i ,j));
-            stroke((int)scaleValue(abs(1.0 - (float)solution.getDensity(i, j))*1000, 0.0, 1.88*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(abs(1.0 - (float)solution.getDensity(i ,j))*1000, 0.0, 1.88*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
-            point(i*5, j*5);
-          } else {
-            stroke((int)scaleValue(abs(1.0 - (float)solution.getDensity(i, j))*1000, 0.0, 1.88*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(abs(1.0 - (float)solution.getDensity(i, j))*1000, 0.0, 1.88*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
-            rect(i*5, j*5, 10, 10);  
-            point(i*5, j*5);
+      
+      // renders fluid field by density
+      else{
+        for (int i = 0; i < rows/5; i++) {
+          for (int j = 0; j < cols/5; j++) {
+            colorMode(HSB, 100);
+            if (solution.isSolid(i, j)){
+              stroke(0);
+              fill(0);
+              rect(i*5, j*5, 10, 10);
+              //println(solution.getDensity(i ,j));
+              stroke((int)scaleValue(abs(1.0 - (float)solution.getDensity(i, j))*1000, 0.0, 1.88*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+              fill((int)scaleValue(abs(1.0 - (float)solution.getDensity(i ,j))*1000, 0.0, 1.88*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+              point(i*5, j*5);
+            } else {
+              stroke((int)scaleValue(abs(1.0 - (float)solution.getDensity(i, j))*1000, 0.0, 1.88*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+              fill((int)scaleValue(abs(1.0 - (float)solution.getDensity(i, j))*1000, 0.0, 1.88*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+              rect(i*5, j*5, 10, 10);  
+              point(i*5, j*5);
+            }
           }
         }
       }

@@ -102,8 +102,8 @@ public class Solver{
       double sumVelocities; 
       double relaxationTime = 1 / (3*viscosity + 0.5); //omega in the equation; mostly an experimental value. Tweak for different results.
       
-      for (int x=0; x<rows; x++) {
-        for (int y=0; y<cols; y++) {
+      for (int x = 0; x < rows; x ++) {
+        for (int y = 0; y < cols; y ++) {
           
           if (!solid[x][y]) {
             
@@ -167,8 +167,9 @@ public class Solver{
     }
 
     private void collideBoundary(){ //handles boundary conditions by reversing direction vector and adding it to corresponding value
-     for (int x=0; x<rows; x++) {
-          for (int y=0; y<cols; y++) {
+       for (int x = 0; x < rows; x ++) {
+          for (int y = 0; y < cols; y ++) {
+            
             if (solid[x][y]) {
               if (velocityUp[x][y] > 0) { 
                 velocityDown[x][y-1] += velocityUp[x][y]; 
@@ -186,6 +187,7 @@ public class Solver{
                 velocityRight[x+1][y] += velocityLeft[x][y]; 
                 velocityLeft[x][y] = 0; 
               }
+              
               if (velocitynorthWest[x][y] > 0) { 
                 velocitySouthEast[x+1][y-1] += velocitynorthWest[x][y]; 
                 velocitynorthWest[x][y] = 0; 
@@ -202,6 +204,7 @@ public class Solver{
                 velocitynorthWest[x-1][y+1] += velocitySouthEast[x][y]; 
                 velocitySouthEast[x][y] = 0; 
               }
+              
             }
           }
         }
@@ -233,14 +236,14 @@ public class Solver{
       }
       
       //handle the 8 directions; note that velocityHere is not propagated
-      for (int r=0; r < rows - 1; r ++) {    
+      for (int r = 0; r < rows - 1; r ++) {    
         for (int c = cols - 1; c > 0; c --) {
           velocityUp[r][c] = velocityUp[r][c - 1]; //moves up component
           velocitynorthWest[r][c] = velocitynorthWest[r + 1][c - 1]; //moves northWest component  
         }
       }
       
-      for (int r = rows-1; r >0; r --) {  
+      for (int r = rows-1; r > 0; r --) {  
         for (int c = cols-1; c > 0; c--) {
           velocityRight[r][c] = velocityRight[r - 1][c]; //moves right component
           velocitynorthEast[r][c] = velocitynorthEast[r - 1][c-1];  //moves northEast component
@@ -254,7 +257,7 @@ public class Solver{
         }
       }
       
-      for (int r = 0; r < rows-1; r ++) {  
+      for (int r = 0; r < rows - 1; r ++) {  
         for (int c = 0; c < cols - 1; c ++) {
           velocityLeft[r][c] = velocityLeft[r + 1][c]; //moves left component
           velocitySouthWest[r][c] = velocitySouthWest[r + 1][c + 1]; //moves southWest component
@@ -262,7 +265,7 @@ public class Solver{
       }
       
       //wind tunnel walls boundary condition
-      for (int x=0; x<rows; x++) {
+      for (int x = 0; x < rows; x++) {
         velocityHere[x][0]  = here;
         velocityRight[x][0]  = right;
         velocityLeft[x][0]  = left;
@@ -284,7 +287,7 @@ public class Solver{
       }
       
       //inlet boundary condition (fluid entering)
-      for (int y=0; y<cols; y++) {
+      for (int y = 0; y < cols; y ++) {
         if (!solid[0][y]) {
           velocityRight[0][y] = right;
           velocitynorthEast[0][y] = northEast;
@@ -293,7 +296,7 @@ public class Solver{
       }
       
       //outlet boundary condition, rho = 0
-      for (int y=0; y<cols; y++) {
+      for (int y = 0; y < cols; y ++) {
         if (!solid[0][y]) {
           velocityLeft[rows-1][y] = left;
           velocitynorthWest[rows-1][y] = northWest;
