@@ -8,7 +8,8 @@ TO RUN: Execute JavaCFD.pde in the NonOOP folder of the main branch. The object-
 2) set display to velocity<br>
 3) click start, and draw geometry on the fluid field by clicking and dragging<br>
 - set the scaling slider to optimize display<br>
-- clicking start again resets the simulation<br><br>
+- clicking start again resets the simulation<br>
+- enter 1 on the keyboard for a line, 2 for a line at 45 degrees, and 3 for a circle <br><br>
 
 If the screen has a uniform color, adjust the scale slider until you have good contrast. It is good to start on velocity mode as that gives the normal, intuitive picture of fluid flow.<br>
 
