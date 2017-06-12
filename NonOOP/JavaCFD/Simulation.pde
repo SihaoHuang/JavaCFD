@@ -161,10 +161,58 @@ class Simulation {
   double scaleValue(double val, float inMin, float inMax, float outMin, float outMax) { //for colored display purposes
     return ((outMax - outMin) * (val - inMin) / (inMax - inMin)) + outMin;
   }
-  
+ void keyPressed(){
+    if (keyPressed){
+      start = true;
+      one();
+      two();
+      three();
+    }
+  }
+  void one(){//press one for a straight line
+    if (key == '1' ){
+      for (int i = 0; i < rows/5; i++) {
+        for (int j = 0; j < cols/5; j++) {
+        solution.solid[i][j] = false;
+        if (i == 200/5 && j <=400/5 && j >= 100/5){
+          solution.solid[i][j] = true;
+        }
+        }
+      }
+
+    }
+  }
+  void two(){//press two for a diagonal
+    if (key == '2'){
+      for (int i= 0; i < rows/5; i++){
+        for (int j = 0; j < cols/5;j++){
+          solution.solid[i][j] = false;
+          if (i>=300/5 && i <=400/5 && 600-5*i== j*5){
+            solution.solid[i][j] = true;
+          }
+        }
+      }
+    }
+  }
+ void three(){// part of a circle
+      if (key == '3'){
+        for (int i = 0; i < rows/5; i++){
+          for (int j = 0; j < cols/5; j++){
+            solution.solid[i][j] = false;
+            int r = 125*125;
+            int x = (5*i-500)*(5*i-500);
+            int y = (5*j-250)*(5*j-250);
+            if (x+y-r<=5 && x+y-r>=-5){
+              solution.solid[i][j] = true;
+            }
+          }
+        }
+      }
+ }
+          
   void mousePressed() {
     barrier();
-    //if (start()) {
+    //if (start) {
     //  if (!start) {
     //    start = true;
     //  }

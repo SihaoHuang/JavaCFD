@@ -36,4 +36,7 @@ void draw(){
   if (mousePressed){
   sim.mousePressed();
   }        
+    if (keyPressed){
+    sim.keyPressed();
+  }
 }
