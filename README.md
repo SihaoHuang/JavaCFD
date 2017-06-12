@@ -1,5 +1,6 @@
+
 <h1>JavaCFD</h1><br>
-Computational fluid dynamics software written in Java using the Lattice-Boltzmann method. Allows custom-defined, arbitrary geometries in 2D incompressible flow field.
+Computational fluid dynamics software written in Java using the Lattice-Boltzmann method. Allows custom-defined, arbitrary geometries in 2D incompressible flow field.<br>
 
 <hr><br>
 TO RUN: Execute JavaCFD.pde in the NonOOP folder of the main branch. The object-oriented version optimizes the Lattice-Boltzmann code for Java but is still a work in progress. Check the demo folder for newest updates on the OOP version.<br>
@@ -7,7 +8,12 @@ TO RUN: Execute JavaCFD.pde in the NonOOP folder of the main branch. The object-
 2) set display to velocity<br>
 3) click start, and draw geometry on the fluid field by clicking and dragging<br>
 - set the scaling slider to optimize display<br>
-- clicking start again resets the simulation<br>
+- clicking start again resets the simulation<br><br>
+
+If the screen has a uniform color, adjust the scale slider until you have good contrast. It is good to start on velocity mode as that gives the normal, intuitive picture of fluid flow.<br>
+
+If the fluid looks like it is being infested with a red virus erasing all the elements, you have saturated the algorithm and caused it to diverge. Simply click start again to reset.<br>
+
 <br>
 Note that the simulation is highly CPU intensive and only small fluid fields should be attempted on most machines. <br>
 
