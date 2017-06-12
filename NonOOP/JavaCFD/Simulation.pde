@@ -1,10 +1,10 @@
 class Simulation {
   
   int x, y;
-  int totalIterations; 
+  int totalIterations;  //counts the number of iterations past
   int rows;
   int cols;
-  Solver solution; 
+  Solver solution; //stores everything needed for the simulation 
   
   double velocity, viscosity;
   float scale;
@@ -34,12 +34,14 @@ class Simulation {
   }
 
   void display() {
+    
     if (start()){
       solution = new Solver(velocity, viscosity, rows/5, cols/5);
     }
     if (solution!= null && start){
       solution.iterate();
     }
+    
     // renders fluid field by velocity
     if(!densityButton){
       for (int i = 0; i < rows/5; i++) {
@@ -61,6 +63,7 @@ class Simulation {
         }
       }
     }
+    
     // renders fluid field by density
     else{
       for (int i = 0; i < rows/5; i++) {
@@ -70,12 +73,13 @@ class Simulation {
             stroke(0);
             fill(0);
             rect(i*5, j*5, 10, 10);
-            stroke((int)scaleValue(solution.getDensity(i, j), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(solution.getDensity(i ,j), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            //println(solution.getDensity(i ,j));
+            stroke((int)scaleValue(abs(1.0 - (float)solution.getDensity(i, j))*1000, 0.0, 1.88*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(abs(1.0 - (float)solution.getDensity(i ,j))*1000, 0.0, 1.88*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
             point(i*5, j*5);
           } else {
-            stroke((int)scaleValue(solution.getDensity(i, j), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
-            fill((int)scaleValue(solution.getDensity(i, j), 0.0, 0.02*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
+            stroke((int)scaleValue(abs(1.0 - (float)solution.getDensity(i, j))*1000, 0.0, 1.88*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values
+            fill((int)scaleValue(abs(1.0 - (float)solution.getDensity(i, j))*1000, 0.0, 1.88*scale, 0.0, 100.0), 100.0, 100.0); // fix scaling values 
             rect(i*5, j*5, 10, 10);  
             point(i*5, j*5);
           }
@@ -132,11 +136,12 @@ class Simulation {
 
     rect(750-25, 650-25/2, 200, 20);
     rect(1000, 650-25/2, 200, 20);  
-     rect(1300,650-25/2,200,20);
+    rect(1300,650-25/2,200,20);
     fill(0);
     rect(slider1X, 650-25/2, 10, 20);
     rect(slider2X, 650-25/2, 10, 20);
     rect(slider3X,650-25/2,10,20);
+    
     if (velslider()) {
       fill(100);
       rect(750-25, 650-25/2, 200, 20);
@@ -158,10 +163,11 @@ class Simulation {
     }
   }
 
-  double scaleValue(double val, float inMin, float inMax, float outMin, float outMax) { //for colored display purposes
+  double scaleValue(double val, float inMin, float inMax, float outMin, float outMax) { //for scaling the colored display 
     return ((outMax - outMin) * (val - inMin) / (inMax - inMin)) + outMin;
   }
- void keyPressed(){
+  
+  void keyPressed(){
     if (keyPressed){
       start = true;
       one();
@@ -169,7 +175,8 @@ class Simulation {
       three();
     }
   }
-  void one(){//press one for a straight line
+  
+  void one(){ //press one on the keyboard for a straight line
     if (key == '1' ){
       for (int i = 0; i < rows/5; i++) {
         for (int j = 0; j < cols/5; j++) {
@@ -182,7 +189,8 @@ class Simulation {
 
     }
   }
-  void two(){//press two for a diagonal
+  
+  void two(){ //press two on the keyboard for a diagonal
     if (key == '2'){
       for (int i= 0; i < rows/5; i++){
         for (int j = 0; j < cols/5;j++){
@@ -194,7 +202,8 @@ class Simulation {
       }
     }
   }
- void three(){// part of a circle
+  
+ void three(){ //press three on the keyboard for a part of a circle
       if (key == '3'){
         for (int i = 0; i < rows/5; i++){
           for (int j = 0; j < cols/5; j++){
@@ -237,17 +246,15 @@ class Simulation {
       }
     }
     if (velslider()) {
-
-       velocity = (0.150*(mouseX-725)/(200));
-
-      slider1X= mouseX;
+        velocity = (0.30*(mouseX-725)/(200)); //adjust this to scale slider values
+        slider1X= mouseX;
     }
     if (viscslider()) {
-          viscosity = 0.005 + ((0.5-0.005)*(mouseX-1000)/200);
+        viscosity = 0.005 + ((0.2-0.005)*(mouseX-1000)/200); //adjust this to scale slider values
         slider2X= mouseX;
     }
     if (scaleslider()){
-      scale = 0.100+((5.0-0.100)*(mouseX-1300)/200);
+      scale = 0.100+((5.0-0.100)*(mouseX-1300)/200); //adjust this to scale slider values
       slider3X=mouseX;
     }
     barrier();
@@ -262,10 +269,12 @@ class Simulation {
     String a = ""+viscosity;
     viscosityString = a.substring(0, 4);
   }
+  
   void updateScale(){
     String a = "" + scale;
     scaleString = a.substring(0,4);
   }
+  
   boolean start() {
     return (mouseX >= 50 && mouseX <= 50+150 && mouseY <= 525+50  && mouseY >= 525);
   }

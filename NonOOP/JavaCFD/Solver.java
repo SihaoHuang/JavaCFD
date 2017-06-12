@@ -3,7 +3,9 @@ public class Solver{
     int rows, cols; //post-scaled number of elements
     int time; //universal simulation time
     double viscosity; //fluid viscosity, user input
-    double overallVelocity; //wind tunvelocityRightl velocity, user input
+    double overallVelocity; //wind tunnel velocity, user input
+    
+    //discretized thermal velocities for each of the 9 possible directions
     double[][] velocityHere;
     double[][] velocityUp;
     double[][] velocityDown;
@@ -13,14 +15,15 @@ public class Solver{
     double[][] velocitynorthEast;
     double[][] velocitySouthWest;
     double[][] velocitySouthEast;
-    boolean[][] solid;
-    double[][] density;    
-    double[][] vSquared;  
+    
+    boolean[][] solid; //indicates if a solid boundary is present 
+    double[][] density; //for UI purposes; not used in calculations
+    double[][] vSquared; //for UI purposes; not used in calculations 
 
     public Solver(double overallVelocity, double viscosity, int x, int y){
       
       //initializes the simulation
-      //create elements for each block in the display
+      //initializes each array, with (i, j) corresponding to the same element in each
       rows = x;
       cols = y;
       this.viscosity = viscosity;
@@ -40,8 +43,8 @@ public class Solver{
       
       //initiate fluid with discretized velocity vectors
       //the probabilities derived from Boltzmann distribution; Weber State University paper
-      //does not matter if element is solid as the solver disregards velocity data 
-      
+      //it does not matter if element is solid as the solver disregards velocity data 
+      //lots of values are precalculated here to make sure no unecessary operations are performed
       double here = 4.0/9.0 * (1 - 1.5*overallVelocity*overallVelocity);
       double up = 1.0/9.0 * (1 - 1.5*overallVelocity*overallVelocity);
       double down = 1.0/9.0 * (1 - 1.5*overallVelocity*overallVelocity);
@@ -54,7 +57,8 @@ public class Solver{
       
       for(int r = 0; r < rows; r++){
         for(int c = 0; c < cols; c ++){
-          if (solid[r][c]) {
+          if (solid[r][c]) { 
+            //clear the values
             velocityHere[r][c] = 0;
             velocityRight[r][c] = 0;
             velocityLeft[r][c] = 0;
@@ -67,6 +71,7 @@ public class Solver{
             vSquared[r][c] = 0;
           } 
           else {
+            //init values for each element
             velocityHere[r][c]  = here;
             velocityRight[r][c]  = right;
             velocityLeft[r][c]  = left;
@@ -85,28 +90,32 @@ public class Solver{
       time = 0;  
     }
     
-    public void iterate(){ 
+    public void iterate(){ //performs one single iteration of the algorithm, as displayed in the GUI counter
     	collide();
     	move();
-      bounce();
+      collideBoundary();
       time += 1;
     }
       
     private void collide() {
       
-      double sumVelocities;
-      double relaxationTime = 1 / (3*viscosity + 0.5);  
+      double sumVelocities; 
+      double relaxationTime = 1 / (3*viscosity + 0.5); //omega in the equation; mostly an experimental value. Tweak for different results.
       
       for (int x=0; x<rows; x++) {
         for (int y=0; y<cols; y++) {
           
           if (!solid[x][y]) {
             
-            sumVelocities = velocityHere[x][y] + velocityUp[x][y] + velocityDown[x][y] + velocityRight[x][y] + velocityLeft[x][y] + velocitynorthWest[x][y] + velocitynorthEast[x][y] + velocitySouthWest[x][y] + velocitySouthEast[x][y];
-            density[x][y] = sumVelocities;    
-            double xVelocity;
-            double yVelocity;
+            sumVelocities = velocityHere[x][y] + velocityUp[x][y] + velocityDown[x][y] + velocityRight[x][y] 
+                           + velocityLeft[x][y] + velocitynorthWest[x][y] + velocitynorthEast[x][y] + velocitySouthWest[x][y] 
+                           + velocitySouthEast[x][y];
+                           
+            density[x][y] = sumVelocities; //sets total density rho for UI
+            double xVelocity; //flow velocity in x basis
+            double yVelocity; //flow velocity in y basis
             
+            //calculate the flow velocities
             if (sumVelocities > 0) {
               xVelocity = (velocityRight[x][y] + velocitynorthEast[x][y]
                  + velocitySouthEast[x][y] - velocityLeft[x][y] 
@@ -120,6 +129,7 @@ public class Solver{
               yVelocity = 0;
             }
             
+            //constants for the following calculations, different for every iteration of the loop
             double threeXVelocity = 3.0 * xVelocity;
             double threeYVelocity = 3.0 * yVelocity;
             double xVelocitySquared = xVelocity * xVelocity;
@@ -127,8 +137,10 @@ public class Solver{
             double twoXYVelocities = 2 * xVelocity * yVelocity;
             double sumSquares = xVelocitySquared + yVelocitySquared;
             
-            vSquared[x][y] = sumSquares;  
+            vSquared[x][y] = sumSquares; //sets the square of the velocities for UI. 
+            //Easy replacement for the magnitude of the curl, which is more difficult to calculate 
             
+            //sets thermal velocities after collision
             velocityHere[x][y]  += relaxationTime * ((4.0/9.0)*sumVelocities 
                                    * (1 - 1.5*sumSquares) - velocityHere[x][y]);
             velocityRight[x][y]  += relaxationTime * ((1.0/9.0)*sumVelocities 
@@ -154,7 +166,7 @@ public class Solver{
       }
     }
 
-    private void bounce(){ 
+    private void collideBoundary(){ //handles boundary conditions by reversing direction vector and adding it to corresponding value
      for (int x=0; x<rows; x++) {
           for (int y=0; y<cols; y++) {
             if (solid[x][y]) {
@@ -195,8 +207,9 @@ public class Solver{
         }
     }
     
-    private void move(){ //f(x+e*deltat, t+deltat)=f(x,t+deltat) 
-    
+    private void move(){ //f(x+e*deltat, t+deltat)=f(x,t+deltat). Propagates flow. 
+      
+      //constants for the following loops
       double v = overallVelocity;
       double threeTimesOverallVelocity = 3.0*v;
       double threeTimesOverallVelocitySquared = threeTimesOverallVelocity*v;
@@ -210,6 +223,7 @@ public class Solver{
       double southEast = 1.0/36.0 * (1 + threeTimesOverallVelocity + threeTimesOverallVelocitySquared);
       double southWest = 1.0/36.0 * (1 - threeTimesOverallVelocity + threeTimesOverallVelocitySquared);
       
+      //handle edges
       for (int c = 0; c < cols - 1; c ++) {
         velocityDown[0][c] = velocityDown[0][c+1];
       }
@@ -218,50 +232,36 @@ public class Solver{
         velocityUp[rows - 1][c] = velocityUp[rows - 1][c - 1];
       }
       
+      //handle the 8 directions; note that velocityHere is not propagated
       for (int r=0; r < rows - 1; r ++) {    
         for (int c = cols - 1; c > 0; c --) {
-          velocityUp[r][c] = velocityUp[r][c - 1];   
-          velocitynorthWest[r][c] = velocitynorthWest[r + 1][c - 1];  
+          velocityUp[r][c] = velocityUp[r][c - 1]; //moves up component
+          velocitynorthWest[r][c] = velocitynorthWest[r + 1][c - 1]; //moves northWest component  
         }
       }
       
       for (int r = rows-1; r >0; r --) {  
         for (int c = cols-1; c > 0; c--) {
-          velocityRight[r][c] = velocityRight[r - 1][c];  
-          velocitynorthEast[r][c] = velocitynorthEast[r - 1][c-1];  
+          velocityRight[r][c] = velocityRight[r - 1][c]; //moves right component
+          velocitynorthEast[r][c] = velocitynorthEast[r - 1][c-1];  //moves northEast component
         }
       }
       
       for (int r = rows-1; r > 0; r --) {   
         for (int c = 0; c < cols - 1; c++) {
-          velocityDown[r][c] = velocityDown[r][c + 1];  
-          velocitySouthEast[r][c] = velocitySouthEast[r - 1][c + 1];  
+          velocityDown[r][c] = velocityDown[r][c + 1]; //moves down component
+          velocitySouthEast[r][c] = velocitySouthEast[r - 1][c + 1];  //moves southEast component
         }
       }
       
       for (int r = 0; r < rows-1; r ++) {  
         for (int c = 0; c < cols - 1; c ++) {
-          velocityLeft[r][c] = velocityLeft[r + 1][c];
-          velocitySouthWest[r][c] = velocitySouthWest[r + 1][c + 1];  
+          velocityLeft[r][c] = velocityLeft[r + 1][c]; //moves left component
+          velocitySouthWest[r][c] = velocitySouthWest[r + 1][c + 1]; //moves southWest component
         }
       }
       
-      for (int y=0; y<cols; y++) {
-        if (!solid[0][y]) {
-          velocityRight[0][y] = right;
-          velocitynorthEast[0][y] = northEast;
-          velocitySouthEast[0][y] = southEast;
-        }
-      }
-
-      for (int y=0; y<cols; y++) {
-        if (!solid[0][y]) {
-          velocityLeft[rows-1][y] = left;
-          velocitynorthWest[rows-1][y] = northWest;
-          velocitySouthWest[rows-1][y] = southWest;
-        }
-      }
-
+      //wind tunnel walls boundary condition
       for (int x=0; x<rows; x++) {
         velocityHere[x][0]  = here;
         velocityRight[x][0]  = right;
@@ -281,6 +281,24 @@ public class Solver{
         velocitySouthEast[x][cols-1] = southEast;
         velocitynorthWest[x][cols-1] = northWest;
         velocitySouthWest[x][cols-1] = southWest;
+      }
+      
+      //inlet boundary condition (fluid entering)
+      for (int y=0; y<cols; y++) {
+        if (!solid[0][y]) {
+          velocityRight[0][y] = right;
+          velocitynorthEast[0][y] = northEast;
+          velocitySouthEast[0][y] = southEast;
+        }
+      }
+      
+      //outlet boundary condition, rho = 0
+      for (int y=0; y<cols; y++) {
+        if (!solid[0][y]) {
+          velocityLeft[rows-1][y] = left;
+          velocitynorthWest[rows-1][y] = northWest;
+          velocitySouthWest[rows-1][y] = southWest;
+        }
       }
  
     }
